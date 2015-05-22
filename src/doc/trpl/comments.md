@@ -1,27 +1,26 @@
-% Comments
+% コメント
 
-Now that we have some functions, it’s a good idea to learn about comments.
-Comments are notes that you leave to other programmers to help explain things
-about your code. The compiler mostly ignores them.
+さあ、いろんな機能を知ったところで、そろそろコメントを学びましょう。
+コメントは、他のプログラマがあなたのコードを読んだ時に、そのコードがどのような意味を持つのかを理解してもらう手助けとなるメモです。
+普通、コンパイラはコメントを無視します。
 
-Rust has two kinds of comments that you should care about: *line comments*
-and *doc comments*.
+Rustには、大きく*1行コメント*と*ドキュメントコメント*という2種類のコメントがあります。
 
 ```rust
-// Line comments are anything after ‘//’ and extend to the end of the line.
+// 1行コメントは、‘//’から行末までがコメントとなります。
 
-let x = 5; // this is also a line comment.
+let x = 5; // これも1行コメントです。
 
-// If you have a long explanation for something, you can put line comments next
-// to each other. Put a space between the // and your comment so that it’s
-// more readable.
+// もし、長い説明を書きたいのであれば、
+// 複数行に渡ってコメントを書けます。
+// ‘//’とコメントの間にスペースを1つ入れておくと見やすくなります。
 ```
 
-The other kind of comment is a doc comment. Doc comments use `///` instead of
-`//`, and support Markdown notation inside:
+もう1つのコメントは、ドキュメントコメントです。
+ドキュメントコメントでは`//`の代わりに`///`を使い、内部ではMarkdown記法が使用できます。
 
 ```rust
-/// Adds one to the number given.
+/// 与えられた数に1を加える。
 ///
 /// # Examples
 ///
@@ -35,11 +34,12 @@ fn add_one(x: i32) -> i32 {
 }
 ```
 
-When writing doc comments, providing some examples of usage is very, very
-helpful. You’ll notice we’ve used a new macro here: `assert_eq!`. This compares
-two values, and `panic!`s if they’re not equal to each other. It’s very helpful
-in documentation. There’s another macro, `assert!`, which `panic!`s if the
-value passed to it is `false`.
+ドキュメントコメントでは、その関数などの使い方の例を示しておくと、そのドキュメントがすごく有益なものになります。
+さて、この例では新たなマクロが出現しました。
+`assert_eq!`マクロです。
+このマクロは、2つの値を比較して、その2値が互いに等しくなければ`panic!`します。
+これはドキュメントを書く上でとても役に立ちます。
+また、`assert!`というマクロは、与えられた値が`false`であれば`panic!`します。
 
-You can use the [`rustdoc`](documentation.html) tool to generate HTML documentation
-from these doc comments, and also to run the code examples as tests!
+[`runtdoc`](documentation.html)を使うことで、ドキュメントコメントからHTML形式のドキュメントを生成できます。
+また、このツールはドキュメントコメント内部で例示されたコードをテストとして実行できます。
