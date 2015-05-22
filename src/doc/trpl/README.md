@@ -1,30 +1,33 @@
-% The Rust Programming Language
+% Rust プログラミング言語
 
-Welcome! This book will teach you about the [Rust Programming Language][rust].
-Rust is a systems programming language focused on three goals: safety, speed,
-and concurrency. It maintains these goals without having a garbage collector,
-making it a useful language for a number of use cases other languages aren’t
-good at: embedding in other languages, programs with specific space and time
-requirements, and writing low-level code, like device drivers and operating
-systems. It improves on current languages targeting this space by having a
-number of compile-time safety checks that produce no runtime overhead, while
-eliminating all data races. Rust also aims to achieve ‘zero-cost abstractions’
-even though some of these abstractions feel like those of a high-level
-language. Even then, Rust still allows precise control like a low-level
-language would.
+ようこそ!
+この本は、 [Rust プログラミング言語][rust] について説明します。
+Rust は、 3 つの目的 (安全性、速度、そして並列性)
+に焦点を当てたシステムプログラミング言語です。
+この言語はガーベジコレクタを持つことなくそれらの目的を維持します。
+そして、他の言語が得意としないいくつかのユースケース
+(他言語への埋め込み、具体的な空間・時間条件を要求するプログラム、
+デバイスドライバやオペレーティングシステムのような低水準コードの記述)
+に役立つ言語になっています。
+実行時オーバヘッドのない幾つかのコンパイル時安全検査があることで、
+そのスペースを目標としている現在の言語をより良いものにします。
+またその一方で、全てのデータ競合を取り除きます。
+たとえこれらの抽象化の一部が高級言語のもののように感じられるとしても、
+Rust は「ゼロコストの抽象化」を成し遂げることを目指しています。
+それでもなお、 Rust は低水準言語がするような正確な制御を可能としています。
 
 [rust]: http://rust-lang.org
 
-“The Rust Programming Language” is split into seven sections. This introduction
-is the first. After this:
+“Rust プログラミング言語”は 7 つの節に分かれています。
+本序論がその 1 つ目です。 その後は、次のようになっています。
 
-* [Getting started][gs] - Set up your computer for Rust development.
-* [Learn Rust][lr] - Learn Rust programming through small projects.
-* [Effective Rust][er] - Higher-level concepts for writing excellent Rust code.
-* [Syntax and Semantics][ss] - Each bit of Rust, broken down into small chunks.
-* [Nightly Rust][nr] - Cutting-edge features that aren’t in stable builds yet.
-* [Glossary][gl] - A reference of terms used in the book.
-* [Academic Research][ar] - Literature that influenced Rust.
+* [はじめに][gs] - Rust 開発のためのコンピュータのセットアップ
+* [Rust の学習][lr] - 小規模プロジェクトを通じた Rust プログラミング
+* [Effective Rust][er] - 優れた Rust コードを書くための高度な概念
+* [構文と意味論][ss] - Rust を小さな塊へ分解
+* [Nightly Rust][nr] - 安定版ビルドにはまだない最先端の機能
+* [用語集][gl] - 本で使われる用語のリファレンス
+* [学術研究][ar] - Rust に影響を与えた文献
 
 [gs]: getting-started.html
 [lr]: learn-rust.html
@@ -34,16 +37,18 @@ is the first. After this:
 [gl]: glossary.html
 [ar]: academic-research.html
 
-After reading this introduction, you’ll want to dive into either ‘Learn Rust’
-or ‘Syntax and Semantics’, depending on your preference: ‘Learn Rust’ if you
-want to dive in with a project, or ‘Syntax and Semantics’ if you prefer to
-start small, and learn a single concept thoroughly before moving onto the next.
-Copious cross-linking connects these parts together.
+本序論を読んだ後、
+あなたは好みに従って「Rust の学習」または「構文と意味論」
+のどちらかに飛び込みたくなるでしょう。
+もしプロジェクトに飛び込みたいなら「Rust の学習」を、
+小さくはじめるのを好むなら「構文と意味論」を読み、
+次へ進む前に完全に一つの概念を学びましょう。
+おびただしいクロスリンキングが一緒にこれらのパートをつなぎます。
 
-### Contributing
+### 貢献
 
-The source files from which this book is generated can be found on Github:
-[github.com/rust-lang/rust/tree/master/src/doc/trpl](https://github.com/rust-lang/rust/tree/master/src/doc/trpl)
+この本のソースファイルは、以下の Github で見つかります。
+[github.com/tut-cc/rust-doc-ja/tree/stable/src/doc/trpl](https://github.com/tut-cc/rust-doc-ja/tree/stable/src/doc/trpl)
 
 ## A brief introduction to Rust
 
