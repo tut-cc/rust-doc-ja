@@ -8,15 +8,15 @@ Rust のインストールが終わったら、初めの Rust プログラムを
 おそらく正しく動作することを確認するよい方法です。
 また、画面に情報を表示することはよくあることです。
 
-初めに私たちがすべきことはコードを入れておくファイルを作ることです。
+初めにすべきことはコードを入れておくファイルを作ることです。
 私は `projects` ディレクトリをホームディレクトリに作って、
 すべてのプロジェクトをそこに保存しています。
-Rust はどこにあなたのコードがあるか管理してくれません。
+Rust はどこにあなたのコードがあるかを管理してはくれません。
 
 This actually leads to one other concern we should address: this guide will
 assume that you have basic familiarity with the command line.
-Rust 自体は特定のエディターやコードの場所を要求しません。
-もしあなたがIDEをコマンドラインより好むのであれば、
+Rust 自体は特定のエディターやコードを保存する場所を指定しません。
+もしあなたがコマンドラインよりIDEを好むのであれば、
 [SolidOak][solidoak] を参照するか、
 あなたのお気に入りのIDEのプラグインを探すとよいでしょう。
 コミュニティによって開発された様々なクオリティの拡張があります。
@@ -27,7 +27,7 @@ Rust 自体は特定のエディターやコードの場所を要求しません
 [solidoak]: https://github.com/oakes/SolidOak
 [plugins]: https://github.com/rust-lang/rust/blob/master/src/etc/CONFIGS.md
 
-というわけで、プロジェクトのディレクトリの中にディレクトリを作りましょう。
+それでは、プロジェクトのディレクトリの中にディレクトリを作りましょう。
 
 ```bash
 $ mkdir ~/projects
@@ -38,13 +38,13 @@ $ cd hello_world
 
 もし Windows で、PowerShell を使っていなければ、
 おそらく `~` はうまく動作しません。
-シェルのドキュメントを調べて下さい。
+詳しくは、シェルのドキュメントを調べて下さい。
 
 次に、新しいソースファイルを作りましょう。
 `main.rs` のようにします。
-Rust ファイルは常に `.rs` という拡張子で終わります。
+Rust ファイルは常に `.rs` という拡張子がつきます。
 もし、2つ以上の単語をファイル名にするときは、
-`helloworld.rs` とするよりは、アンダーバーを使って `hello_world.rs` としてください。
+`helloworld.rs` とするよりは、アンダーバーを使って `hello_world.rs` としたほうが良いでしょう。
 
 ファイルを開いたら、次のように入力してください。
 
