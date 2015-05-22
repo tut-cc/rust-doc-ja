@@ -1,30 +1,33 @@
 % Hello, world!
 
-Now that you have Rust installed, let’s write your first Rust program. It’s
-traditional to make your first program in any new language one that prints the
-text “Hello, world!” to the screen. The nice thing about starting with such a
-simple program is that you can verify that your compiler isn’t just installed,
-but also working properly. And printing information to the screen is a pretty
-common thing to do.
+Rust のインストールが終わったら、初めの Rust プログラムを書いてみましょう。
+様々なプログラミング言語で初めのプログラムは伝統的に、
+画面に “Hello, world!” と表示するものです。
+このシンプルなプログラムから始めることは、
+あなたのコンパイラーがインストールされただけでなく、
+おそらく正しく動作することを確認するよい方法です。
+また、画面に情報を表示することはよくあることです。
 
-The first thing that we need to do is make a file to put our code in. I like
-to make a `projects` directory in my home directory, and keep all my projects
-there. Rust does not care where your code lives.
+初めに私たちがすべきことはコードを入れておくファイルを作ることです。
+私は `projects` ディレクトリをホームディレクトリに作って、
+すべてのプロジェクトをそこに保存しています。
+Rust はどこにあなたのコードがあるか管理してくれません。
 
 This actually leads to one other concern we should address: this guide will
-assume that you have basic familiarity with the command line. Rust itself makes
-no specific demands on your editing tooling, or where your code lives. If you
-prefer an IDE to the command line, you may want to check out
-[SolidOak][solidoak], or wherever plugins are for your favorite IDE. There are
-a number of extensions of varying quality in development by the community. The
-Rust team also ships [plugins for various editors][plugins]. Configuring your
-editor or IDE is out of the scope of this tutorial, so check the documentation
-for your setup, specifically.
+assume that you have basic familiarity with the command line.
+Rust 自体は特定のエディターやコードの場所を要求しません。
+もしあなたがIDEをコマンドラインより好むのであれば、
+[SolidOak][solidoak] を参照するか、
+あなたのお気に入りのIDEのプラグインを探すとよいでしょう。
+コミュニティによって開発された様々なクオリティの拡張があります。
+また、Rust チームは [plugins for various editors][plugins] で案内しています。
+特に、エディタやIDEの設定はこのチュートリアルの範囲外なので、
+ドキュメントを確認して設定してください。
 
 [solidoak]: https://github.com/oakes/SolidOak
 [plugins]: https://github.com/rust-lang/rust/blob/master/src/etc/CONFIGS.md
 
-With that said, let’s make a directory in our projects directory.
+というわけで、プロジェクトのディレクトリの中にディレクトリを作りましょう。
 
 ```bash
 $ mkdir ~/projects
@@ -33,14 +36,17 @@ $ mkdir hello_world
 $ cd hello_world
 ```
 
-If you’re on Windows and not using PowerShell, the `~` may not work. Consult
-the documentation for your shell for more details.
+もし Windows で、PowerShell を使っていなければ、
+おそらく `~` はうまく動作しません。
+シェルのドキュメントを調べて下さい。
 
-Let’s make a new source file next. We’ll call our file `main.rs`. Rust files
-always end in a `.rs` extension. If you’re using more than one word in your
-filename, use an underscore: `hello_world.rs` rather than `helloworld.rs`.
+次に、新しいソースファイルを作りましょう。
+`main.rs` のようにします。
+Rust ファイルは常に `.rs` という拡張子で終わります。
+もし、2つ以上の単語をファイル名にするときは、
+`helloworld.rs` とするよりは、アンダーバーを使って `hello_world.rs` としてください。
 
-Now that you’ve got your file open, type this in:
+ファイルを開いたら、次のように入力してください。
 
 ```rust
 fn main() {
@@ -48,7 +54,7 @@ fn main() {
 }
 ```
 
-Save the file, and then type this into your terminal window:
+ファイルを保存して、次のようにターミナルに入力してください。
 
 ```bash
 $ rustc main.rs
@@ -56,7 +62,7 @@ $ ./main # or main.exe on Windows
 Hello, world!
 ```
 
-Success! Let’s go over what just happened in detail.
+成功です! 何が起こったのか詳しく見てみましょう。
 
 ```rust
 fn main() {
@@ -64,12 +70,16 @@ fn main() {
 }
 ```
 
-These lines define a *function* in Rust. The `main` function is special:
-it's the beginning of every Rust program. The first line says "I’m declaring a
-function named `main` which takes no arguments and returns nothing." If there
-were arguments, they would go inside the parentheses (`(` and `)`), and because
-we aren’t returning anything from this function, we can omit the return type
-entirely. We’ll get to it later.
+この行は Rust において *関数* を定義します。
+`main` 関数は特別で、
+すべての Rust プログラムは `main` 関数から始まります。
+1行目は
+「これは `main` という名前の関数で、引数を取らず、何も返しません。」
+という意味です。
+もし引数があれば括弧の中(`(`と`)`)に書きます。
+そしてこの関数は何も返さないので、
+返す型を省略出来ます。
+これについては後で触れます。
 
 You’ll also note that the function is wrapped in curly braces (`{` and `}`).
 Rust requires these around all function bodies. It is also considered good
