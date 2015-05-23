@@ -39,9 +39,6 @@ $ sudo /usr/local/lib/rustlib/uninstall.sh
 一部の人々は当たり前のように私達が`curl | sh`するように言うと文句を言うことがあります．
 基本的に，貴方がこれを実行する時，貴方はRustをメンテナンスしているいい人が自分のコンピュータをHackして悪さをしようと思っていない事を信じています.
 それは良い直感だと思います!
-If you're one of those people, please check out the
-documentation on [building Rust from Source][from source], or [the official
-binary downloads][install page].
 もし貴方が文句を言う人の一人なら，ドキュメントの[ソースコードからのRustのビルド][from source]か[公式のバイナリダウンロードページ][install page]から入手して使って下さい.
 
 [from source]: https://github.com/rust-lang/rust#building-from-source
