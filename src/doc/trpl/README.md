@@ -1,6 +1,6 @@
 % Rust プログラミング言語
 
-ようこそ!
+ようこそ！
 この本は、 [Rust プログラミング言語][rust] について説明します。
 Rust は、 3 つの目的 (安全性、速度、そして並列性)
 に焦点を当てたシステムプログラミング言語です。
@@ -47,16 +47,16 @@ Rust は「ゼロコストの抽象化」を成し遂げることを目指して
 
 ### 貢献
 
-この本のソースファイルは、以下の Github で見つかります。
+この本のソースファイルは、次の Github で見つかります。
 [github.com/tut-cc/rust-doc-ja/tree/stable/src/doc/trpl](https://github.com/tut-cc/rust-doc-ja/tree/stable/src/doc/trpl)
 
-## A brief introduction to Rust
+## Rust の短い序論
 
-Is Rust a language you might be interested in? Let’s examine a few small code
-samples to show off a few of its strengths.
+Rust に興味があるかもしれませんか？
+その強さを見せるために、いくつかのコード例を調べてみましょう。
 
-The main concept that makes Rust unique is called ‘ownership’. Consider this
-small example:
+Rust をユニークにする主な概念は、「所有 (ownership)」 と呼ばれるものです。
+次の例を考えてみましょう。
 
 ```rust
 fn main() {
@@ -64,43 +64,45 @@ fn main() {
 }
 ```
 
-This program makes a [variable binding][var] named `x`. The value of this
-binding is a `Vec<T>`, a ‘vector’, that we create through a [macro][macro]
-defined in the standard library. This macro is called `vec`, and we invoke
-macros with a `!`. This follows a general principle of Rust: make things
-explicit. Macros can do significantly more complicated things than function
-calls, and so they’re visually distinct. The `!` also helps with parsing,
-making tooling easier to write, which is also important.
+このプログラムは `x` と名付けられた [変数束縛][var] を作成しています。
+束縛している値は、標準ライブラリで定義された [マクロ][macro] を通して作成された
+`Vec<T>` 、ベクトルです。
+このマクロは `vec` と呼ばれており、マクロは `!` をつけることで呼び出されます。
+これは、 Rust の一般原則、 make things explicit (物事は明示せよ) に従っています。
+マクロは関数呼び出しよりもかなり複雑なことをすることができるので、視覚的に明瞭にします。
+`!` はパージングも助け、より容易に書けるようにします。そしてまたそれは重要です。
 
-We used `mut` to make `x` mutable: bindings are immutable by default in Rust.
-We’ll be mutating this vector later in the example.
+`mut` を使った理由は、 `x` をミュータブルにするためです。
+デフォルトで Rust は、束縛はイミュータブルです。
 
-It’s also worth noting that we didn’t need a type annotation here: while Rust
-is statically typed, we didn’t need to explicitly annotate the type. Rust has
-type inference to balance out the power of static typing with the verbosity of
-annotating types.
+ここで型注釈を必要としなかったことにも注意する価値があります。
+Rust が静的に型付けられる間、明示的に型を注釈する必要がありませんでした。
+静的型付けの力と、型注釈をつける冗長さのバランスをとるために、 Rust には型推論があります。
 
-Rust prefers stack allocation to heap allocation: `x` is placed directly on the
-stack. However, the `Vec<T>` type allocates space for the elements of the
-vector on the heap. If you’re not familiar with this distinction, you can
-ignore it for now, or check out [‘The Stack and the Heap’][heap]. As a systems
-programming language, Rust gives you the ability to control how your memory is
-allocated, but when we’re getting started, it’s less of a big deal.
+Rust はヒープ割り当てよりもスタック割り当てを好みます。`x` はスタックに直接配置されます。
+しかし、 `Vec<T>` 型はヒープの領域をベクトルの要素に割り当てます。
+もしこれらの区別をよく知らないならば、
+今はこれを無視することも、 ['The Stack and the Heap'][heap] を確認することもできます。
+システムプログラミング言語として、
+Rust はメモリがどう割り当てられるのかを制御する能力をあなたに与えます。
+しかし、Rust を始めたばかりのときには、それはあまり大したことではありません。
 
 [var]: variable-bindings.html
 [macro]: macros.html
 [heap]: the-stack-and-the-heap.html
 
-Earlier, we mentioned that ‘ownership’ is the key new concept in Rust. In Rust
-parlance, `x` is said to ‘own’ the vector. This means that when `x` goes out of
-scope, the vector’s memory will be de-allocated. This is done deterministically
-by the Rust compiler, rather than through a mechanism such as a garbage
-collector. In other words, in Rust, you don’t call functions like `malloc` and
-`free` yourself: the compiler statically determines when you need to allocate
-or deallocate memory, and inserts those calls itself. To err is to be human,
-but compilers never forget.
+我々は先ほど、「所有 (ownership)」が Rust の鍵となる新しい概念だと説明しました。
+Rust 用語では、 `x` はベクトルを 所有 (`own`) する、と言われています。
+これは、 `x` がスコープから出るとき、そのベクトルのメモリが解放されることを意味しています。
+ガーベジコレクタのようなメカニズムによるものではなく、
+これは Rust コンパイラにより決定論的に行われます。
+言い換えると、 Rust では、
+あなたは `malloc` や `free` のような命令を自分自身で呼び出すことは出来ません。
+コンパイラが静的に、いつメモリを割り当て、解放する必要があるかを決定し、
+それらの命令を挿入します。
+誤ることは人間であることです。しかし、コンパイラは絶対に忘れません。
 
-Let’s add another line to our example:
+先ほどの例にもうひとつ、行を追加しましょう。
 
 ```rust
 fn main() {
@@ -110,17 +112,20 @@ fn main() {
 }
 ```
 
-We’ve introduced another binding, `y`. In this case, `y` is a ‘reference’ to
-the first element of the vector. Rust’s references are similar to pointers in
-other languages, but with additional compile-time safety checks. References
-interact with the ownership system by [‘borrowing’][borrowing] what they point
-to, rather than owning it. The difference is, when the reference goes out of
-scope, it will not deallocate the underlying memory. If it did, we’d
-de-allocate twice, which is bad!
+もう一つの束縛、 `y` を導入しました。
+このケースでは、 `y` はベクトルの先頭要素への参照です。
+Rust の参照は他言語のポインタによく似ていますが、
+付加的なコンパイル時安全チェックが行われます。
+それらが指すもの (所有するのではなく) を [「借りること」][borrowing] によって、
+参照は所有システム (ownership system) と相互作用します。
+違いは、参照がスコープから出たときその先のメモリを解放しないことです。
+もし解放してしまったら、私たちはメモリ解放を二回行うことになります。
+そしてそれはいけないことです！
 
 [borrowing]: references-and-borrowing.html
 
-Let’s add a third line. It looks innocent enough, but causes a compiler error:
+三行目を追加しましょう。
+無害に見えますが、これはコンパイルエラーを引き起こします。
 
 ```rust,ignore
 fn main() {
@@ -132,8 +137,8 @@ fn main() {
 }
 ```
 
-`push` is a method on vectors that appends another element to the end of the
-vector. When we try to compile this program, we get an error:
+`push` はもう一つの要素をベクトルの末尾に追加するメソッドです。
+このプログラムはコンパイルしようとすると、エラーを吐きます。
 
 ```text
 error: cannot borrow `x` as mutable because it is also borrowed as immutable
@@ -150,20 +155,26 @@ fn main() {
 ^
 ```
 
-Whew! The Rust compiler gives quite detailed errors at times, and this is one
-of those times. As the error explains, while we made our binding mutable, we
-still cannot call `push`. This is because we already have a reference to an
-element of the vector, `y`. Mutating something while another reference exists
-is dangerous, because we may invalidate the reference. In this specific case,
-when we create the vector, we may have only allocated space for three elements.
-Adding a fourth would mean allocating a new chunk of memory for all those elements,
-copying the old values over, and updating the internal pointer to that memory.
-That all works just fine. The problem is that `y` wouldn’t get updated, and so
-we’d have a ‘dangling pointer’. That’s bad. Any use of `y` would be an error in
-this case, and so the compiler has caught this for us.
+うひゃあ！
+Rust コンパイラはときどき極めて詳細なエラーを吐きます。これはそんなときうちのの一つです。
+エラーが説明するように、束縛をミュータブルにしている間、まだ `push` を呼ぶことはできません。
+これは、ベクトルの要素への参照 `y` を既に持っているからです。
+我々がもう一つの参照を無効にするかもしれないので、
+その参照が存在している間、何かを変更するのは危険なのです。
+この特定のケースでは、ベクトルを作ったとき、 
+3 つの要素のための領域を確保するだけだったかもしれません。
+4 番目の要素を加えることは、それら全ての要素のために、
+新たにかなりの量のメモリを確保し、古い値をコピーし、
+そして内部ポインタをそのメモリへと更新することを意味するでしょう。
+それは、ちゃんと問題なく全て動きます。
+問題は、 `y` が更新されず、「ダングリングポインタ」を持ってしまうだろうことです。
+それはいけないことです。
+この場合、 `y` はいかなる使用においてもエラーとなるでしょう。
+したがって、我々のためにコンパイラはこれを捉えました。
 
-So how do we solve this problem? There are two approaches we can take. The first
-is making a copy rather than using a reference:
+では、どのようにこの問題を解決するのでしょうか？
+我々がとることのできるアプローチは 2 つあります。
+1 つ目は、参照を使用するのではなく、コピーを作ることです。
 
 ```rust
 fn main() {
@@ -175,15 +186,16 @@ fn main() {
 }
 ```
 
-Rust has [move semantics][move] by default, so if we want to make a copy of some
-data, we call the `clone()` method. In this example, `y` is no longer a reference
-to the vector stored in `x`, but a copy of its first element, `"Hello"`. Now
-that we don’t have a reference, our `push()` works just fine.
+Rust はデフォルトで [ムーブセマンティクス][move] を持っているので、
+我々がデータのコピーを作りたいときには `clone()` メソッドを呼びます。
+この例では、 `y` はもはや `x` にストアされているベクトルへの参照ではなく、
+その先頭要素、 `"Hello"` のコピーです。
+参照を持たなくなった今、我々の `push()` はちゃんと問題なく動きます。
 
 [move]: move-semantics.html
 
-If we truly want a reference, we need the other option: ensure that our reference
-goes out of scope before we try to do the mutation. That looks like this:
+参照が本当に欲しいのであれば、他のオプションを必要とします。
+変更しようとする前に、次のように参照がスコープ外へ出ることを確認してください。
 
 ```rust
 fn main() {
@@ -197,8 +209,8 @@ fn main() {
 }
 ```
 
-We created an inner scope with an additional set of curly braces. `y` will go out of
-scope before we call `push()`, and so we’re all good.
+波括弧を付加することにより、内部スコープを作成しました。
+`push()` を呼ぶ前に `y` はスコープ外へと出ているので、問題ありません。
 
-This concept of ownership isn’t just good for preventing dangling pointers, but an
-entire set of related problems, like iterator invalidation, concurrency, and more.
+所有の概念はダングリングポインタを予防するのみならず、
+関連した問題 (イテレータ無効、並列性、などなど) の全てについても良いものです。
