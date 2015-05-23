@@ -24,7 +24,7 @@ $ sh rustup.sh
 [win32]: https://static.rust-lang.org/dist/rust-1.0.0-beta-i686-pc-windows-gnu.msi
 [win64]: https://static.rust-lang.org/dist/rust-1.0.0-beta-x86_64-pc-windows-gnu.msi
 
-## Uninstalling
+## アンインストール
 
 もし貴方がRustを必要ないと決定した場合は，私達は少し悲しいです，しかしそれもいいでしょう．
 必ずしも全てのプログラミング言語が皆にとって素晴らしい物ではないですしね．
@@ -44,7 +44,6 @@ $ sudo /usr/local/lib/rustlib/uninstall.sh
 [from source]: https://github.com/rust-lang/rust#building-from-source
 [install page]: http://www.rust-lang.org/install.html
 
-Oh, we should also mention the officially supported platforms:
 おお，私達が公式でサポートしているプラットフォームを言うのを忘れてました．
 
 * Windows (7, 8, Server 2008 R2)
