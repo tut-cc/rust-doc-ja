@@ -1,17 +1,16 @@
 % Installing Rust
 
-The first step to using Rust is to install it! There are a number of ways to
-install Rust, but the easiest is to use the `rustup` script. If you're on Linux
-or a Mac, all you need to do is this (note that you don't need to type in the
-`$`s, they just indicate the start of each command):
+ここではまず最初のステップとしてRustのインストールを行います!
+Rustをインストールするには幾つかの方法が存在しますが，ここでは最も簡単な`rustip`というスクリプトを使用します．
+もし貴方がLinuxかMacの環境ならば，貴方は次のことをすれば良いだけです($を入力しないように注意して下さい．これはコマンドの開始を示しています.)
 
 ```bash
 $ curl -sf -L https://static.rust-lang.org/rustup.sh | sh
 ```
 
-If you're concerned about the [potential insecurity][insecurity] of using `curl
-| sh`, please keep reading and see our disclaimer below. And feel free to
-use a two-step version of the installation and examine our installation script:
+もし貴方がこのコマンドを実行することが不安なら[potential insecurity][insecurity]の`curl
+| sh`を読んでみて下さい．そして以下の私達の免責事項を見て下さい．
+そして気楽に次の二段階のバージョンのインストールを使用して，インストールスクリプトを調べてみて下さい.
 
 ```bash
 $ curl -f -L https://static.rust-lang.org/rustup.sh -O
@@ -20,8 +19,7 @@ $ sh rustup.sh
 
 [insecurity]: http://curlpipesh.tumblr.com
 
-If you're on Windows, please download either the [32-bit installer][win32] or
-the [64-bit installer][win64] and run it.
+もし貴方がWindowsなら，[32-bit installer][win32]か[64-bit installer][win64]をダウンロードして実行して下さい.
 
 [win32]: https://static.rust-lang.org/dist/rust-1.0.0-beta-i686-pc-windows-gnu.msi
 [win64]: https://static.rust-lang.org/dist/rust-1.0.0-beta-x86_64-pc-windows-gnu.msi
