@@ -1,8 +1,8 @@
 % for Loops
 
-The `for` loop is used to loop a particular number of times. Rust’s `for` loops
-work a bit differently than in other systems languages, however. Rust’s `for`
-loop doesn’t look like this “C-style” `for` loop:
+`for` ループは特定の回数の繰り返しに使われていました．
+しかし Rust の `for` ループは，他のシステム言語とは少し違った動きをします．
+Rust の `for` ループは以下のような「 C スタイル」の `for` ループではないのです．
 
 ```c
 for (x = 0; x < 10; x++) {
