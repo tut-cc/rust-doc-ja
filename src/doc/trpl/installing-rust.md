@@ -44,13 +44,13 @@ $ sudo /usr/local/lib/rustlib/uninstall.sh
 [from source]: https://github.com/rust-lang/rust#building-from-source
 [install page]: http://www.rust-lang.org/install.html
 
-おお、私達が公式でサポートしているプラットフォームを言うのを忘れてました。
+おっと、私達が公式でサポートしているプラットフォームを言うのを忘れてました。
 
 * Windows (7, 8, Server 2008 R2)
 * Linux (2.6.18 or later, various distributions), x86 and x86-64
 * OSX 10.7 (Lion) or greater, x86 and x86-64
 
-私達は広範囲のテストをこれらのプラットフォームに行っています、そして，少しのAndroidのような環境にも。
+これらのプラットフォームについては広範囲のテストを行っている、そしてその他の少しのAndroidのような環境でも多少のテストを行っています。
 しかし、これらの公式にサポートするプラットフォームが最も高い可用性を持っていてほとんどのテストを通過しています。
 
 最後に，Windowsについてです。Rustはリリースする時にWindowsというプラットフォームをファーストクラスに考えています。しかし、正直に言うと、私達のWindowsの経験がLinux/OS Xの経験のように集まっていません 。
