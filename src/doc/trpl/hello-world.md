@@ -58,7 +58,7 @@ fn main() {
 
 ```bash
 $ rustc main.rs
-$ ./main # or main.exe on Windows
+$ ./main # Windows では main.exe
 Hello, world!
 ```
 
@@ -160,7 +160,7 @@ main.exe  main.rs
 実行可能なファイル(Windowsでは `main.exe` 、 その他では `main` )です。
 
 ```bash
-$ ./main  # or main.exe on Windows
+$ ./main  # Windows では main.exe
 ```
 
 このようにすると、ターミナルに `Hello, world!` というテキストが表示されます。
