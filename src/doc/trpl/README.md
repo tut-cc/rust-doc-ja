@@ -47,7 +47,7 @@ Rust は「ゼロコストの抽象化」を成し遂げることを目指して
 
 ### 貢献
 
-この本のソースファイルは、次の Github で見つかります。
+この本のソースファイルは、Github にあります。
 [github.com/tut-cc/rust-doc-ja/tree/stable/src/doc/trpl](https://github.com/tut-cc/rust-doc-ja/tree/stable/src/doc/trpl)
 
 ## Rust の短い序論
