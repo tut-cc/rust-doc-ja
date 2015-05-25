@@ -1,6 +1,6 @@
 % for Loops
 
-`for` ループは特定の回数の繰り返しに使われていました．
+以前は， `for` ループは特定の回数の繰り返しに使われていました．
 しかし Rust の `for` ループは，他のシステム言語とは少し違った動きをします．
 Rust の `for` ループは以下のような「 C スタイル」の `for` ループではないのです．
 
@@ -10,7 +10,7 @@ for (x = 0; x < 10; x++) {
 }
 ```
 
-Instead, it looks like this:
+代わりに，このようにします．
 
 ```rust
 for x in 0..10 {
@@ -18,11 +18,11 @@ for x in 0..10 {
 }
 ```
 
-In slightly more abstract terms,
+より抽象的な語で表すと次のようになります．
 
 ```ignore
-for var in expression {
-    code
+for 変数 in 式 {
+    コード
 }
 ```
 
