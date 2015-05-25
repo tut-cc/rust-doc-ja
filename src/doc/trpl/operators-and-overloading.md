@@ -1,11 +1,9 @@
-% Operators and Overloading
+% 演算子と演算子オーバーロード
 
-Rust allows for a limited form of operator overloading. There are certain
-operators that are able to be overloaded. To support a particular operator
-between types, there’s a specific trait that you can implement, which then
-overloads the operator.
+Rust では、演算子をオーバーロードできますが、すべての演算子がオーバーロードできるわけではありません。
+特定のトレイトを実装することによって、各演算子をオーバーロードできます。
 
-For example, the `+` operator can be overloaded with the `Add` trait:
+たとえば、 `+` 演算子は `Add` トレイトを実装することでオーバーロードできます。
 
 ```rust
 use std::ops::Add;
@@ -34,17 +32,15 @@ fn main() {
 }
 ```
 
-In `main`, we can use `+` on our two `Point`s, since we’ve implemented
-`Add<Output=Point>` for `Point`.
+`Point` に `Add<Output=Point>` を実装しているので、 `main` では、二つの `Point` に対して `+` 演算子が使用できます。
 
-There are a number of operators that can be overloaded this way, and all of
-their associated traits live in the [`std::ops`][stdops] module. Check out its
-documentation for the full list.
+この方法でオーバーロードできる演算子はいくつかあり、 [`std::ops`][stdops] に各演算子に対応するトレイトがあります。
+どのような演算子がオーバーロードでき、どのようなトレイトがあるかは、ドキュメントを確認してください。
 
 [stdops]: ../std/ops/index.html
 
-Implementing these traits follows a pattern. Let’s look at [`Add`][add] in more
-detail:
+これらのトレイトの実装方法は、あるパターンに従っています。
+もう少し詳細に [`Add`][add] を確認してみましょう。
 
 ```rust
 # mod foo {
@@ -58,9 +54,9 @@ pub trait Add<RHS = Self> {
 
 [add]: ../std/ops/trait.Add.html
 
-There’s three types in total involved here: the type you `impl Add` for, `RHS`,
-which defaults to `Self`, and `Output`. For an expression `let z = x + y`, `x`
-is the `Self` type, `y` is the RHS, and `z` is the `Self::Output` type.
+`Add` では、合計で3つの型が関連付けされています。
+トレイトを実装する `impl Add` に対して、 デフォルトで `Self` となっている `RHS` と `Output` の3つです。
+たとえば`let z = x + y` という式では、 `x` が `Self` 型で、 `y` の型は `RHS`、 `z` が `Self::Output` 型となります。
 
 ```rust
 # struct Point;
@@ -75,7 +71,7 @@ impl Add<i32> for Point {
 }
 ```
 
-will let you do this:
+上記のように実装したのであれば、次のように書くことができます。
 
 ```rust,ignore
 let p: Point = // ...
