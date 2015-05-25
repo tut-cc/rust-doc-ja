@@ -1,30 +1,33 @@
 % Hello, world!
 
-Now that you have Rust installed, let’s write your first Rust program. It’s
-traditional to make your first program in any new language one that prints the
-text “Hello, world!” to the screen. The nice thing about starting with such a
-simple program is that you can verify that your compiler isn’t just installed,
-but also working properly. And printing information to the screen is a pretty
-common thing to do.
+Rust のインストールが終わったら、初めの Rust プログラムを書いてみましょう。
+どんな新しい言語も、初めのプログラムは
+画面に “Hello, world!” というテキスト表示するものを作るのがが伝統です。
+この単純なプログラムから始めることは、
+コンパイラーがきちんとインストールされているかだけでなく、
+正しく動作することを確認するよい方法です。
+また、画面に情報を表示することはよくあることです。
 
-The first thing that we need to do is make a file to put our code in. I like
-to make a `projects` directory in my home directory, and keep all my projects
-there. Rust does not care where your code lives.
+初めにすべきことはコードを入れておくファイルを作ることです。
+私は `projects` ディレクトリをホームディレクトリに作って、
+すべてのプロジェクトをそこに収めておくのが好きです。
+Rust はどこにあなたのコードが置かれていようと気にはしません。
 
-This actually leads to one other concern we should address: this guide will
-assume that you have basic familiarity with the command line. Rust itself makes
-no specific demands on your editing tooling, or where your code lives. If you
-prefer an IDE to the command line, you may want to check out
-[SolidOak][solidoak], or wherever plugins are for your favorite IDE. There are
-a number of extensions of varying quality in development by the community. The
-Rust team also ships [plugins for various editors][plugins]. Configuring your
-editor or IDE is out of the scope of this tutorial, so check the documentation
-for your setup, specifically.
+ここで、ひとつ触れておくべきことがあります。
+このガイドは、あなたがコマンドラインの基本的な操作に親しんでいることを想定しています。
+Rust 自体はエディタやコードを保存する場所について、特別に指定はしません。
+もしあなたがコマンドラインよりIDEを好むのであれば、
+[SolidOak][solidoak] を参照するか、
+あなたのお気に入りのIDEのプラグインを探すとよいでしょう。
+コミュニティによって開発された様々なクオリティの拡張があります。
+また、Rust チームは [plugins for various editors][plugins] で案内をしています。
+特に、エディタやIDEの設定はこのチュートリアルの範囲外なので、
+ドキュメントを確認して設定してください。
 
 [solidoak]: https://github.com/oakes/SolidOak
 [plugins]: https://github.com/rust-lang/rust/blob/master/src/etc/CONFIGS.md
 
-With that said, let’s make a directory in our projects directory.
+それでは、プロジェクト用ディレクトリの中にディレクトリを作りましょう。
 
 ```bash
 $ mkdir ~/projects
@@ -33,14 +36,17 @@ $ mkdir hello_world
 $ cd hello_world
 ```
 
-If you’re on Windows and not using PowerShell, the `~` may not work. Consult
-the documentation for your shell for more details.
+もし Windows を使っていて、PowerShell を使っていなければ、
+`~` はうまく動作しないでしょう。
+詳しくは、使っているシェルのドキュメントを調べて下さい。
 
-Let’s make a new source file next. We’ll call our file `main.rs`. Rust files
-always end in a `.rs` extension. If you’re using more than one word in your
-filename, use an underscore: `hello_world.rs` rather than `helloworld.rs`.
+次に、新しいソースファイルを作りましょう。
+このファイルを `main.rs` のようにします。
+Rust ファイルは常に `.rs` という拡張子で終わります。
+もし、2つ以上の単語をファイル名にするときは、
+`helloworld.rs` とするよりは、アンダーバーを使って `hello_world.rs` としたほうが良いでしょう。
 
-Now that you’ve got your file open, type this in:
+ファイルを開いたら、次のように入力してください。
 
 ```rust
 fn main() {
@@ -48,15 +54,15 @@ fn main() {
 }
 ```
 
-Save the file, and then type this into your terminal window:
+ファイルを保存して、次のようにターミナルに入力してください。
 
 ```bash
 $ rustc main.rs
-$ ./main # or main.exe on Windows
+$ ./main # Windows では main.exe
 Hello, world!
 ```
 
-Success! Let’s go over what just happened in detail.
+成功です! 何が起こったのか詳しく見てみましょう。
 
 ```rust
 fn main() {
@@ -64,103 +70,120 @@ fn main() {
 }
 ```
 
-These lines define a *function* in Rust. The `main` function is special:
-it's the beginning of every Rust program. The first line says "I’m declaring a
-function named `main` which takes no arguments and returns nothing." If there
-were arguments, they would go inside the parentheses (`(` and `)`), and because
-we aren’t returning anything from this function, we can omit the return type
-entirely. We’ll get to it later.
+この行は Rust において *関数* を定義しています。
+`main` 関数は特別で、
+すべての Rust プログラムは `main` 関数から始まります。
+1行目は
+「これは `main` という名前の関数で、引数を取らず、何も返しません。」
+という意味です。
+もし引数があれば括弧(`(`と`)`)の中に書かれたでしょう。
+また、この関数は何も返さないので、
+返す型を省略出来ます。
+これについては後で触れます。
 
-You’ll also note that the function is wrapped in curly braces (`{` and `}`).
-Rust requires these around all function bodies. It is also considered good
-style to put the opening curly brace on the same line as the function
-declaration, with one space in between.
+この関数が波括弧(`{`と`}`)に囲まれていることにも気がつくでしょう。
+Rust では、これらの括弧がどんな関数の本体でも必要です。
+また、関数の定義と同じ行にスペースをひとつ空けて開き括弧を書くのが、
+よいスタイルだと考えられます。
 
-Next up is this line:
+次はこの行です。
 
 ```rust
     println!("Hello, world!");
 ```
 
-This line does all of the work in our little program. There are a number of
-details that are important here. The first is that it’s indented with four
-spaces, not tabs. Please configure your editor of choice to insert four spaces
-with the tab key. We provide some [sample configurations for various
-editors][configs].
+この行が我々の小さなプログラムの仕事のすべてをしています。
+この行には重要な情報がたくさんあります。
+一つ目は、この行がタブではなく4つのスペースでインデントされていることです。
+あなたのエディタがタブキーで、4つのスペースを入力するように設定して下さい。
+私達は [様々なエディタ向けに設定のサンプル][configs] を提供しています。
 
 [configs]: https://github.com/rust-lang/rust/tree/master/src/etc/CONFIGS.md
 
-The second point is the `println!()` part. This is calling a Rust [macro][macro],
-which is how metaprogramming is done in Rust. If it were a function instead, it
-would look like this: `println()`. For our purposes, we don’t need to worry
-about this difference. Just know that sometimes, you’ll see a `!`, and that
-means that you’re calling a macro instead of a normal function. Rust implements
-`println!` as a macro rather than a function for good reasons, but that's an
-advanced topic. One last thing to mention: Rust’s macros are significantly
-different from C macros, if you’ve used those. Don’t be scared of using macros.
-We’ll get to the details eventually, you’ll just have to trust us for now.
+二つ目は、`println!()` という部分です。
+これは、 Rust メタプログラミングを行う [マクロ][macro] を呼び出しています。
+もしこれが関数であれば、 `println()` のようになったでしょう。
+とりあえずは、この違いについて気にする必要はありません。
+ただ、今後 `!` を見ることがあるでしょうが、
+それが普通の関数ではなくマクロの呼び出しであることだけは知っておいて下さい。
+Rust は正当な理由があって `println!` を関数ではなくマクロとして実装しています。
+それについては発展したトピックで取り扱います。
+最後にもうひとつ、もしあなたが C のマクロを使ったことがあるのなら、
+Rust のマクロはそれとは大きく違うものです。
+マクロを使うことを恐れないでください。
+後々それについては触れますが、今のところは私たちのいうことを信じて下さい。
 
 [macro]: macros.html
 
-Next, `"Hello, world!"` is a ‘string’. Strings are a surprisingly complicated
-topic in a systems programming language, and this is a ‘statically allocated’
-string. If you want to read further about allocation, check out
-[the stack and the heap][allocation], but you don’t need to right now if you
-don’t want to. We pass this string as an argument to `println!`, which prints the
-string to the screen. Easy enough!
+次に、 `"Hello, world!"` は*文字列*(*string*)です。
+文字列はシステムプログラミング言語において、驚くほど込み入ったトピックですが、
+これは*静的に割り当てられた*(*statically allocated*)文字列です。
+もし割り当てについて知りたければ [スタックとヒープ][allocation] を参照して下さい。
+そうでなければ今すぐ読む必要はありません。
+この文字列を引数として `println!` に渡し、
+それが画面にこの文字列を表示します。
+簡単だね！
 
 [allocation]: the-stack-and-the-heap.html
 
-Finally, the line ends with a semicolon (`;`). Rust is an ‘expression oriented’
-language, which means that most things are expressions, rather than statements.
-The `;` is used to indicate that this expression is over, and the next one is
-ready to begin. Most lines of Rust code end with a `;`.
+最後に、この行はセミコロン(`;`)で終わっています。
+Rust は*式指向*の言語で、ほとんどのものが述語というより式です。
+`;` は式がそこで終わり、次の式が始まることを示しています。
+Rust のコードではほとんどの行が `;` で終わります。
 
-Finally, actually compiling and running our program. We can compile with our
-compiler, `rustc`, by passing it the name of our source file:
+最後に、実際にプログラムをコンパイルして実行しましょう。
+ソースファイルの名前を `rustc` に渡すことでコンパイルができます。
+
 
 ```bash
 $ rustc main.rs
 ```
 
-This is similar to `gcc` or `clang`, if you come from a C or C++ background. Rust
-will output a binary executable. You can see it with `ls`:
+もしあなたが C や C++ の経験があれば `gcc` や `clang` と似たようなものに見えるでしょう。
+Rust は実行可能なバイナリを出力します。
+これを `ls` で確認して見ましょう。
 
 ```bash
 $ ls
 main  main.rs
 ```
 
-Or on Windows:
+Windows であれば次のようにします。
 
 ```bash
 $ dir
 main.exe  main.rs
 ```
 
-There are now two files: our source code, with the `.rs` extension, and the
-executable (`main.exe` on Windows, `main` everywhere else)
+2つのファイルがありますね。
+`.rs` 拡張しのついたソースコードと、
+実行可能なファイル(Windowsでは `main.exe` 、 その他では `main` )です。
 
 ```bash
-$ ./main  # or main.exe on Windows
+$ ./main  # Windows では main.exe
 ```
 
-This prints out our `Hello, world!` text to our terminal.
+このようにすると、ターミナルに `Hello, world!` というテキストが表示されます。
 
-If you come from a dynamic language like Ruby, Python, or JavaScript,
-you may not be used to these two steps being separate. Rust is an
-‘ahead-of-time compiled language’, which means that you can compile a program,
-give it to someone else, and they don't need to have Rust installed. If you
-give someone a `.rb` or `.py` or `.js` file, they need to have a
-Ruby/Python/JavaScript implementation installed, but you just need one command
-to both compile and run your program. Everything is a tradeoff in language
-design, and Rust has made its choice.
+もしあなたが Ruby 、 Python 、 JavaScript と言った動的言語から来たのであれば、
+2つのステップに別れることに慣れないかもしれません。
+Rust は実行時前にコンパイルされる言語です。
+あなたはプログラムをコンパイルして誰かにあげることができるわけですが、
+もらった相手は Rust をインストールしている必要がないのです。
+もしあなたが `.rb` や `.py` や `.js` といったファイルをあげるとすると、
+相手は Ruby/Python/JavaScript をインストールしている必要がありますが、
+あなたはそのプログラムをコンパイルして実行するのにひとつのコマンドしか必要ありません。
+言語のデザインは何事もトレードオフです。
+Rust はこの選択をしたのです。
 
-Congratulations! You have officially written a Rust program. That makes you a
-Rust programmer! Welcome. 🎊🎉👍
+おめでとう！
+あなたはもう公式に Rust のプログラムを書きました。
+ゆえにあなたは Rust プログラマーです。
+ようこそ！🎊🎉👍
 
-Next, I'd like to introduce you to another tool, Cargo, which is used to write
-real-world Rust programs. Just using `rustc` is nice for simple things, but as
-your project grows, you'll want something to help you manage all of the options
-that it has, and to make it easy to share your code with other people and
-projects.
+次は、実際に Rust プログラムを書くのに用いられる `Cargo` というツールを紹介します。
+`rustc` だけを使うのは単純なことをするにはよいですが、
+プロジェクトが成長するにつれて、
+すべてのオプションを管理するのを手助けしてくれたり、
+あなたのコードを他の人たちや他のプロジェクトと共有するのを簡単にしてくれたりするものが欲しくなるでしょう。
+
