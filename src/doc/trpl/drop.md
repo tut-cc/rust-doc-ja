@@ -1,8 +1,8 @@
 % Drop
 
-Now that we’ve discussed traits, let’s talk about a particular trait provided
-by the Rust standard library, [`Drop`][drop]. The `Drop` trait provides a way
-to run some code when a value goes out of scope. For example:
+さて、トレイトについて議論したところで、 Rust の標準ライブラリが提供している [`Drop`][drop] というトレイトについて話しましょう。
+`Drop` トレイトは、値がスコープから抜ける際にコードを実行する手段を提供します。
+例えば、
 
 [drop]: ../std/ops/trait.Drop.html
 
@@ -18,18 +18,17 @@ impl Drop for HasDrop {
 fn main() {
     let x = HasDrop;
 
-    // do stuff
+    // 何らかの処理
 
-} // x goes out of scope here
+} // ここで x はスコープから抜ける
 ```
+`Drop` の `drop()` は、`main()` の最後で `x` がスコープから抜けるときに実行されます。
+`Drop` は `drop()` メソッドのみを持ち、 これは `self` に対するミュータブルな参照を引数として取ります。
 
-When `x` goes out of scope at the end of `main()`, the code for `Drop` will
-run. `Drop` has one method, which is also called `drop()`. It takes a mutable
-reference to `self`.
-
-That’s it! The mechanics of `Drop` are very simple, but there are some
-subtleties. For example, values are dropped in the opposite order they are
-declared. Here’s another example:
+`Drop` はたったこれだけのトレイトです。
+しくみはとても簡単ですが、実は巧妙に工夫されている点があります。
+たとえば、値は宣言された順番とは逆順で drop されます。
+次の例を見てみましょう。
 
 ```rust
 struct Firework {
@@ -48,20 +47,19 @@ fn main() {
 }
 ```
 
-This will output:
+これのプログラムは次のように出力します。
 
 ```text
 BOOM times 100!!!
 BOOM times 1!!!
 ```
 
-The TNT goes off before the firecracker does, because it was declared
-afterwards. Last in, first out.
+TNT は firecracker よりも後に宣言されているので、 TNT は firecracker よりも先に爆発します。
+若いものほど最初に drop される "Last in, first out" になっています。
+(訳注： LIFOである理由は、参照カウントのように、複数の変数で、ある一つのリソースを共有している場合に、LIFOでないと処理が破綻するためです。)
 
-So what is `Drop` good for? Generally, `Drop` is used to clean up any resources
-associated with a `struct`. For example, the [`Arc<T>` type][arc] is a
-reference-counted type. When `Drop` is called, it will decrement the reference
-count, and if the total number of references is zero, will clean up the
-underlying value.
+さて、 `Drop` はいつ使えばいいのでしょうか。
+`Drop` は構造体に関連したリソースを破棄するのに使われます。
+たとえば、 [`Arc<T> 型`][arc]は参照カウント型ですが、 `Drop` が呼ばれた時には参照カウントを一つ減らし、参照カウントがゼロになればリソースを破棄します。
 
 [arc]: ../std/sync/struct.Arc.html
