@@ -55,8 +55,8 @@ pub trait Add<RHS = Self> {
 [add]: ../std/ops/trait.Add.html
 
 `Add` では、合計で3つの型が関連付けされています。
-トレイトを実装する `impl Add` に対して、 デフォルトで `Self` となっている `RHS` と `Output` の3つです。
-たとえば`let z = x + y` という式では、 `x` が `Self` 型で、 `y` の型は `RHS`、 `z` が `Self::Output` 型となります。
+トレイトを実装する `impl Add` に対して、 デフォルトで `Self` となっている `RHS` と、 `Output` の3つです。
+たとえば`let z = x + y` という式では、 `x` が `Self` 型で、 `y` の型が `RHS`、 `z` が `Self::Output` 型となります。
 
 ```rust
 # struct Point;
