@@ -1,4 +1,4 @@
-% Getting Started
+% どうにゅう
 
 This first section of the book will get you going with Rust and its tooling.
 First, we’ll install Rust. Then, the classic ‘Hello World’ program. Finally,
