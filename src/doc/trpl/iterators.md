@@ -1,4 +1,4 @@
-% Iterators
+% イテレータ
 
 Let's talk about loops.
 
