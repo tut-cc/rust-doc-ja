@@ -1,4 +1,4 @@
-%こんにちは、Cargo
+%こんにちは、Cargo。
 % Hello, Cargo!
 
 [Cargo][cratesio] is a tool that Rustaceans use to help manage their Rust
