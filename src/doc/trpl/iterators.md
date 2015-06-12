@@ -55,7 +55,7 @@ for num in &nums {
 
 これには2つの理由があります。第一に、このほうが書き手の意味するところがはっきり表現できます。私たちはvectorのインデックスを作成してからその要素を繰り返し参照したいのではなく、vector自体を反復処理したいのです。第二に、このバージョンのほうがより効率的です: 1つ目の例では`num[i]`というようにインデックスを使っているため、余計な境界チェックが発生します。しかし、イテレータが順番にvectorの各要素の参照を生成していくため、2つ目の例では境界チェックが発生しません。これはイテレータにとってごく一般的な性質です: 私たちは不要な境界チェックを無視してもなお、安全であることを知っています。
 
-ここには`println!`の動作という、100%はっきりしていないもう1つの詳細があります。`num`は実際には`&i32`型です。これは`i32`の参照であり、`i32`それ自体ではありません。`println!`は私たちがそれを理解していなくとも、参照からうまく値を取り出してくれます。このコードも正しく動作します:
+ここには`println!`の動作という、100%はっきりしていないもう1つの詳細があります。`num`は実際には`&i32`型です。これは`i32`の参照であり、`i32`それ自体ではありません。`println!`は私たちがそのことを理解していなくとも、参照からうまく値を取り出してくれます。このコードも正しく動作します:
 
 ```rust
 let nums = vec![1, 2, 3];
@@ -65,7 +65,7 @@ for num in &nums {
 }
 ```
 
-今、私たちは明示的に`num`から参照を取り出しました。なぜ`&nums`は私たちに参照を渡すのでしょうか？第一に、`&`を用いて私たちが明示的に要求したからです。第二に、もしデータそれ自体を私たちに渡す場合、私たちはデータの所有者でなければならないため、データの複製と、それを私たちに渡す操作が伴います。参照を使えば、データの参照を借用し、参照を通すだけで、ムーブを行う必要がなくなります。
+今、私たちは明示的に`num`から参照を取り出しました。なぜ`&nums`は私たちに参照を渡すのでしょうか？第一に、`&`を用いて私たちが明示的に要求したからです。第二に、もしデータそれ自体を私たちに渡す場合、私たちはデータの所有者でなければならないため、データの複製と、それを私たちに渡す操作が伴います。参照を使えば、データの参照を借用し、参照を介するだけで、ムーブを行う必要がなくなります。
 
 そういうわけで、今やrangesはあまりあなたが欲しいものではなくなりました。それではあなたが代わりに欲しいと思うものについて話しましょう。
 
@@ -79,38 +79,27 @@ for num in &nums {
 
 ## コンシューマ
 
-A *consumer* operates on an iterator, returning some kind of value or values.
-The most common consumer is `collect()`. This code doesn't quite compile,
-but it shows the intention:
+コンシューマとはイテレータ上で動作し、1種類以上の値を返すものです。最も一般的なコンシューマは`collect()`です。このコードは全くコンパイルできませんが、意図するところは伝わるでしょう。
 
 ```{rust,ignore}
 let one_to_one_hundred = (1..101).collect();
 ```
 
-As you can see, we call `collect()` on our iterator. `collect()` takes
-as many values as the iterator will give it, and returns a collection
-of the results. So why won't this compile? Rust can't determine what
-type of things you want to collect, and so you need to let it know.
-Here's the version that does compile:
+ご覧のとおり、ここでイテレータが`collect()`を呼び出しています。`collect()`はイテレータが渡す沢山の値を受け取り、その結果をコレクションとして返します。それならなぜこのコードはコンパイルできないのでしょうか？Rustはあなたが集めたい値の型を判断することができないため、あなたが知っている型を指定する必要があります。こちらのバージョンはコンパイルできます:
 
 ```rust
 let one_to_one_hundred = (1..101).collect::<Vec<i32>>();
 ```
 
-If you remember, the `::<>` syntax allows us to give a type hint,
-and so we tell it that we want a vector of integers. You don't always
-need to use the whole type, though. Using a `_` will let you provide
-a partial hint:
+もしあなたが覚えているなら、`::<>`構文で型ヒントを与える事ができ、整数型のvectorが欲しいと伝えることができます。しかし、常に型をまるごとを書く必要はありません。`_`を用いることで部分的なヒントができます:
 
 ```rust
 let one_to_one_hundred = (1..101).collect::<Vec<_>>();
 ```
 
-This says "Collect into a `Vec<T>`, please, but infer what the `T` is for me."
-`_` is sometimes called a "type placeholder" for this reason.
+これは"値を`Vec<T>`の中に集めて下さい、しかし`T`は私のために推論して下さい"という意味です。このため`_`は度々"型プレースホルダー"と呼ばれています。
 
-`collect()` is the most common consumer, but there are others too. `find()`
-is one:
+`collect()`は最も有名なコンシューマですが、他にもあります。`find()`もそのひとつです:
 
 ```rust
 let greater_than_forty_two = (0..100)
@@ -122,57 +111,35 @@ match greater_than_forty_two {
 }
 ```
 
-`find` takes a closure, and works on a reference to each element of an
-iterator. This closure returns `true` if the element is the element we're
-looking for, and `false` otherwise. Because we might not find a matching
-element, `find` returns an `Option` rather than the element itself.
+`find`はクロージャを引数にとり、イテレータの各要素の参照で動作します。もし要素が私たちが期待するものであれば、このクロージャは`true`を返し、そうでなければ`false`を返します。要素がマッチングしないかもしれないため、`find`は要素それ自体ではなく`Option`を返します。
 
-Another important consumer is `fold`. Here's what it looks like:
+もう一つの重要なコンシューマは`fold`です。ここでは次のようになります:
 
 ```rust
 let sum = (1..4).fold(0, |sum, x| sum + x);
 ```
 
-`fold()` is a consumer that looks like this:
-`fold(base, |accumulator, element| ...)`. It takes two arguments: the first
-is an element called the *base*. The second is a closure that itself takes two
-arguments: the first is called the *accumulator*, and the second is an
-*element*. Upon each iteration, the closure is called, and the result is the
-value of the accumulator on the next iteration. On the first iteration, the
-base is the value of the accumulator.
+`fold()`はこのようなコンシューマです:`fold(base, |accumulator, element| ...)` 2つの引数を取ります: 第一引数は*base*と呼ばれます。第二引数は2つ引数を受け取るクロージャです:クロージャの第一引数は*accumulator*と呼ばれており、第二引数は*element*です。各反復毎にクロージャが呼び出され、その結果が次の反復のaccumulatorの値となります。反復処理の最初に、baseがaccumulatorの値となります。
 
-Okay, that's a bit confusing. Let's examine the values of all of these things
-in this iterator:
+ええ、少し混乱しますね。ではこのイテレータを以下の値で試してみましょう:
 
-| base | accumulator | element | closure result |
-|------|-------------|---------|----------------|
-| 0    | 0           | 1       | 1              |
-| 0    | 1           | 2       | 3              |
-| 0    | 3           | 3       | 6              |
+| base | accumulator | element | クロージャの結果 |
+|------|-------------|---------|------------------|
+| 0    | 0           | 1       | 1                |
+| 0    | 1           | 2       | 3                |
+| 0    | 3           | 3       | 6                |
 
-We called `fold()` with these arguments:
+これらの引数で`fold()`を呼び出してみました。
 
 ```rust
 # (1..4)
 .fold(0, |sum, x| sum + x);
 ```
 
-So, `0` is our base, `sum` is our accumulator, and `x` is our element.  On the
-first iteration, we set `sum` to `0`, and `x` is the first element of `nums`,
-`1`. We then add `sum` and `x`, which gives us `0 + 1 = 1`. On the second
-iteration, that value becomes our accumulator, `sum`, and the element is
-the second element of the array, `2`. `1 + 2 = 3`, and so that becomes
-the value of the accumulator for the last iteration. On that iteration,
-`x` is the last element, `3`, and `3 + 3 = 6`, which is our final
-result for our sum. `1 + 2 + 3 = 6`, and that's the result we got.
+というわけで、`0`がbaseで、`sum`がaccumulatorで、xがelementです。1度目の反復では、私たちはsumに0をセットし、`nums`の1つ目の要素`1`が`x`になります。私たちはそのとき`sum`と`x`を足し、`0 + 1 = 1`を計算します。2度目の反復では前回の`sum`がaccumulatorになり、elementは値の列の2番目の要素`2`になるため、`3 + 3 = 6`となり、これが最終的な結果となります。`1 + 2 + 3 = 6` が、得られる結果となります。
 
-Whew. `fold` can be a bit strange the first few times you see it, but once it
-clicks, you can use it all over the place. Any time you have a list of things,
-and you want a single result, `fold` is appropriate.
-
-Consumers are important due to one additional property of iterators we haven't
-talked about yet: laziness. Let's talk some more about iterators, and you'll
-see why consumers matter.
+ふぅ、ようやく説明し終わりました。`fold`は初めのうちこそ少し奇妙に見えるかもしれませんが、一度理解すればあらゆる場面で使えるでしょう。何かのリストを持っていて、そこから1つの結果を求めたいときならいつでも、`fold`は適切な処理です。
+コンシューマはまだ話していないイテレータのもう1つの性質のために重要な役割を担っています: 遅延性です。それではもっと詳しくイテレータについて話していきましょう、そうすればなぜコンシューマが重要なのか理解できるはずです。
 
 ## Iterators
 
