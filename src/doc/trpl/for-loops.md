@@ -1,8 +1,8 @@
 % for Loops
 
-The `for` loop is used to loop a particular number of times. Rust’s `for` loops
-work a bit differently than in other systems languages, however. Rust’s `for`
-loop doesn’t look like this “C-style” `for` loop:
+かねてより、 `for` ループは特定回数の繰り返しに使われてきました。
+しかし Rust の `for` ループは、他のシステム言語とは少し違った動きをします。
+Rust の `for` ループは以下のような「 C スタイル」の `for` ループではないのです。
 
 ```c
 for (x = 0; x < 10; x++) {
@@ -10,7 +10,7 @@ for (x = 0; x < 10; x++) {
 }
 ```
 
-Instead, it looks like this:
+Rust では、その代わりに以下のように記述します。
 
 ```rust
 for x in 0..10 {
@@ -18,7 +18,7 @@ for x in 0..10 {
 }
 ```
 
-In slightly more abstract terms,
+より抽象的に表すと、次のようになります。
 
 ```ignore
 for var in expression {
@@ -26,18 +26,22 @@ for var in expression {
 }
 ```
 
-The expression is an [iterator][iterator]. The iterator gives back a series of
-elements. Each element is one iteration of the loop. That value is then bound
-to the name `var`, which is valid for the loop body. Once the body is over, the
-next value is fetched from the iterator, and we loop another time. When there
-are no more values, the `for` loop is over.
+このとき、 expression は [イテレータ][iterator] です。
+イテレータは要素の列を返します。
+各要素はループを一巡します。
+そのとき、その値は名前 `var` に束縛されます。
+なおその名前はその繰り返し部分内でのみ有効です。
+一旦その繰り返し部分が終われば、
+次の値をイテレータから取って、次のループが実行されます。
+それ以上値が残っていなければ、 `for` ループは終了します。
 
 [iterator]: iterators.html
 
-In our example, `0..10` is an expression that takes a start and an end position,
-and gives an iterator over those values. The upper bound is exclusive, though,
-so our loop will print `0` through `9`, not `10`.
+上記の例における `0..10` は開始位置と終了位置をとる式で、
+開始位置から終了位置までをなめるイテレータを返します．
+しかし上限値は含まないため、
+例におけるループは `0` から `10` までではなく `9` までを印字します。
 
-Rust does not have the “C-style” `for` loop on purpose. Manually controlling
-each element of the loop is complicated and error prone, even for experienced C
-developers.
+Rust には、意図的に 「 C スタイル」の `for` ループを持たせていません。
+経験豊富な C の開発者でさえ、
+ループのそれぞれの要素を小手先で制御することは難しく、そして誤りがちだからです。
