@@ -1,7 +1,6 @@
-% Traits
+% トレイト
 
-Do you remember the `impl` keyword, used to call a function with [method
-syntax][methodsyntax]?
+あなたは[method syntax][methodsyntax]で関数を呼び出すために用いた`impl`キーワードを覚えていますか？
 
 ```rust
 struct Circle {
@@ -19,8 +18,7 @@ impl Circle {
 
 [methodsyntax]: method-syntax.html
 
-Traits are similar, except that we define a trait with just the method
-signature, then implement the trait for that struct. Like this:
+トレイトはそれに似ていますが、定義するときにはシグネチャだけを記述し、その後各構造体について実装します。このようになります。
 
 ```rust
 struct Circle {
@@ -40,12 +38,9 @@ impl HasArea for Circle {
 }
 ```
 
-As you can see, the `trait` block looks very similar to the `impl` block,
-but we don’t define a body, just a type signature. When we `impl` a trait,
-we use `impl Trait for Item`, rather than just `impl Item`.
+このように、`traits`の記述は`impl`とかなり似ているように見えますが、関数の実装を定義せず、シグネチャだけになっています。私たちがトレイトを`実装`するときは、ただ`impl 実装の対象`とするのではなく、`impl トレイト for 実装の対象`とします。
 
-We can use traits to constrain our generics. Consider this function, which
-does not compile, and gives us a similar error:
+私たちはジェネリクスに制約を持たせるためにトレイトを使用することが出来ます。以下の関数について考えてみます。これはコンパイルできませんが、類似したエラーが発生します。
 
 ```rust,ignore
 fn print_area<T>(shape: T) {
@@ -53,15 +48,13 @@ fn print_area<T>(shape: T) {
 }
 ```
 
-Rust complains:
+Rustの言う文句は以下のとおりです。
 
 ```text
 error: type `T` does not implement any method in scope named `area`
 ```
 
-Because `T` can be any type, we can’t be sure that it implements the `area`
-method. But we can add a ‘trait constraint’ to our generic `T`, ensuring
-that it does:
+`T`はありとあらゆる型であるため、Rustは`area`メソッドが実装されているか確信を持つことが出来ません。しかしジェネリック型`T`に対して'トレイトによる制約'を加える事で、`area`メソッドが実装されていることを保証します。
 
 ```rust
 # trait HasArea {
@@ -72,11 +65,8 @@ fn print_area<T: HasArea>(shape: T) {
 }
 ```
 
-The syntax `<T: HasArea>` means `any type that implements the HasArea trait`.
-Because traits define function type signatures, we can be sure that any type
-which implements `HasArea` will have an `.area()` method.
-
-Here’s an extended example of how this works:
+`<T: HasArea>`構文は`HasAreaトレイトを実装するあらゆる型`を意味します。トレイトは関数のシグネチャの型を定義しているため、`HasArea`を実装するあらゆる型が`.area()`メソッドを持っていることを確認できます。
+上記のコードを拡張した例がこちらです。
 
 ```rust
 trait HasArea {
@@ -129,29 +119,26 @@ fn main() {
 }
 ```
 
-This program outputs:
+このプログラムの出力は、
 
 ```text
 This shape has an area of 3.141593
 This shape has an area of 1
 ```
 
-As you can see, `print_area` is now generic, but also ensures that we have
-passed in the correct types. If we pass in an incorrect type:
+上記の通り、`print_area`はジェネリックですが、正しい型が渡されることを保証します。もし不正な型が渡されるとすると、
 
 ```rust,ignore
 print_area(5);
 ```
 
-We get a compile-time error:
+コンパイルエラーになります。
 
 ```text
 error: failed to find an implementation of trait main::HasArea for int
 ```
 
-So far, we’ve only added trait implementations to structs, but you can
-implement a trait for any type. So technically, we _could_ implement `HasArea`
-for `i32`:
+これまでは構造体にのみトレイトの実装を追加していましたが、あなたはあらゆる型に対してトレイトを実装することができます。技術的には、`i32`のための`HasArea`を実装することができます。
 
 ```rust
 trait HasArea {
@@ -169,15 +156,9 @@ impl HasArea for i32 {
 5.area();
 ```
 
-It is considered poor style to implement methods on such primitive types, even
-though it is possible.
+例え可能であったとしても、プリミティブ型が持つメソッドを実装する方法としては望ましくないと考えられています。
 
-This may seem like the Wild West, but there are two other restrictions around
-implementing traits that prevent this from getting out of hand. The first is
-that if the trait isn’t defined in your scope, it doesn’t apply. Here’s an
-example: the standard library provides a [`Write`][write] trait which adds
-extra functionality to `File`s, for doing file I/O. By default, a `File`
-won’t have its methods:
+ここまでくると何でもありな様に見えますが、手が負えなくなるのを防ぐためにトレイトの実装周りには2つの制限が設けられています。第1に、あなたのスコープ内で定義されていないトレイトは適用されません。例えば、標準ライブラリは`File`にI/O機能を追加するための[`write`][write]トレイトを提供します。デフォルトでは、`File`はそのメソッドを持っていません。
 
 [write]: ../std/io/trait.Write.html
 
@@ -187,7 +168,7 @@ let result = f.write("whatever".as_bytes());
 # result.unwrap(); // ignore the error
 ```
 
-Here’s the error:
+エラーは以下のとおりです。
 
 ```text
 error: type `std::fs::File` does not implement any method in scope named `write`
@@ -196,7 +177,7 @@ let result = f.write(b"whatever");
                ^~~~~~~~~~~~~~~~~~
 ```
 
-We need to `use` the `Write` trait first:
+`Write`トレイトのために、初めに`use`が必要となります。
 
 ```rust,ignore
 use std::io::Write;
@@ -206,26 +187,19 @@ let result = f.write("whatever".as_bytes());
 # result.unwrap(); // ignore the error
 ```
 
-This will compile without error.
+これはエラー無しでコンパイルされます。
 
-This means that even if someone does something bad like add methods to `int`,
-it won’t affect you, unless you `use` that trait.
+これは、例え誰かが`int`へメソッドを追加するような望ましくない何かを行ったとしても、あなたがトレイトの`use`を行わない限り、影響はないことを意味します。
 
-There’s one more restriction on implementing traits. Either the trait or the
-type you’re writing the `impl` for must be defined by you. So, we could
-implement the `HasArea` type for `i32`, because `HasArea` is in our code. But
-if we tried to implement `Float`, a trait provided by Rust, for `i32`, we could
-not, because neither the trait nor the type are in our code.
+トレイトの実装についての制限はもう1つあります。トレイト、またはあなたが書いている`impl`の対象となる型は、あなた自身によって実装されなければなりません。`HasArea`は私たちのコードであるため、`i32`型のための`HasArea`を実装することができます。しかし、`i32`のためにRustによって提供されている`ToString`トレイトを実装したいとしても、トレイト及び型が私たちのコードでは無いため、それはできません。
 
-One last thing about traits: generic functions with a trait bound use
-‘monomorphization’ (mono: one, morph: form), so they are statically dispatched.
-What’s that mean? Check out the chapter on [trait objects][to] for more details.
+最後に1つ。トレイトによって束縛されたジェネリック関数は`monomorphization`(mono:単一の、morph:形式)されるため、静的ディスパッチが行われます。一体どういう意味でしょうか？詳細については、[トレイトオブジェクト][to]の章をチェックしてください。
 
 [to]: trait-objects.html
 
-# Multiple trait bounds
+# 複数のトレイト束縛
 
-You’ve seen that you can bound a generic type parameter with a trait:
+あなたはトレイトを用いてジェネリックな型パラメータが束縛できることを見てきたばかりです。
 
 ```rust
 fn foo<T: Clone>(x: T) {
@@ -233,7 +207,7 @@ fn foo<T: Clone>(x: T) {
 }
 ```
 
-If you need more than one bound, you can use `+`:
+もし2つ以上の束縛が必要なのであれば、`+`を使うことができます。
 
 ```rust
 use std::fmt::Debug;
@@ -244,13 +218,11 @@ fn foo<T: Clone + Debug>(x: T) {
 }
 ```
 
-`T` now needs to be both `Clone` as well as `Debug`.
+`T`は今`Clone`と`Debug`、両方が必要です。
 
-# Where clause
+# Where 節
 
-Writing functions with only a few generic types and a small number of trait
-bounds isn’t too bad, but as the number increases, the syntax gets increasingly
-awkward:
+幾つかのジェネリック型とトレイト拘束で関数を書くことは悪いことではありませんが、数が増えるといよいよこの記法では不便になってきます。
 
 ```
 use std::fmt::Debug;
@@ -262,10 +234,9 @@ fn foo<T: Clone, K: Clone + Debug>(x: T, y: K) {
 }
 ```
 
-The name of the function is on the far left, and the parameter list is on the
-far right. The bounds are getting in the way.
+関数名は左端にあり、引数リストは右端にあります。トレイト拘束を記述する部分が邪魔になっているのです。
 
-Rust has a solution, and it’s called a ‘`where` clause’:
+そこでRustは'`where`節'と呼ばれる解決策を用意しています。
 
 ```
 use std::fmt::Debug;
@@ -288,10 +259,7 @@ fn main() {
 }
 ```
 
-`foo()` uses the syntax we showed earlier, and `bar()` uses a `where` clause.
-All you need to do is leave off the bounds when defining your type parameters,
-and then add `where` after the parameter list. For longer lists, whitespace can
-be added:
+`foo()`は先程見せたままのシンタックスで、`bar()`は`where`節を用いています。あなたがすべきことは型パラメータの定義時にトレイト束縛を記述するのではなく、引数リストの後に`where`を加えることです。長いリストであれば、空白を加えることもできます。
 
 ```
 use std::fmt::Debug;
@@ -306,9 +274,8 @@ fn bar<T, K>(x: T, y: K)
 }
 ```
 
-This flexibility can add clarity in complex situations.
-
-`where` is also more powerful than the simpler syntax. For example:
+この柔軟性は、複雑な状況であっても明瞭さを保つことができます。
+また、`where`は基本的なシンタックスよりも強力です。例えば、
 
 ```
 trait ConvertTo<Output> {
@@ -319,27 +286,24 @@ impl ConvertTo<i64> for i32 {
     fn convert(&self) -> i64 { *self as i64 }
 }
 
-// can be called with T == i32
+// T == i32の時呼び出せる
 fn normal<T: ConvertTo<i64>>(x: &T) -> i64 {
     x.convert()
 }
 
-// can be called with T == i64
+// T == i64のとき呼び出せる
 fn inverse<T>() -> T
-        // this is using ConvertTo as if it were "ConvertFrom<i32>"
+        // これは"ConvertFrom<i32>"であるかのようにConvertToを用いている
         where i32: ConvertTo<T> {
     1i32.convert()
 }
 ```
 
-This shows off the additional feature of `where` clauses: they allow bounds
-where the left-hand side is an arbitrary type (`i32` in this case), not just a
-plain type parameter (like `T`).
+ここでは`where`節の追加機能を披露しています。この節は型パラメータではない任意の型(`T`ではなく、今回は`i32`のような型)によって束縛することを許可します。
 
-## Default methods
+## デフォルトメソッド
 
-There’s one last feature of traits we should cover: default methods. It’s
-easiest just to show an example:
+私たちがカバーしておくべきトレイトの最後の機能がデフォルトメソッドです。これの例を示すのは最も簡単です。
 
 ```rust
 trait Foo {
@@ -349,9 +313,7 @@ trait Foo {
 }
 ```
 
-Implementors of the `Foo` trait need to implement `bar()`, but they don’t
-need to implement `baz()`. They’ll get this default behavior. They can
-override the default if they so choose:
+`Foo`トレイトの実装者は`bar()`を実装する必要がありますが、`baz()`を実装する必要はありません。これは標準の動作が与えられています。実装者の選択次第では標準の動作をオーバーライドすることも可能です。
 
 ```rust
 # trait Foo {
@@ -379,9 +341,9 @@ let over = OverrideDefault;
 over.baz(); // prints "Override baz!"
 ```
 
-# Inheritance
+# 継承
 
-Sometimes, implementing a trait requires implementing another trait:
+時々、トレイトを実装するのに他のトレイトの実装が必要なこともあります。
 
 ```rust
 trait Foo {
@@ -393,7 +355,7 @@ trait FooBar : Foo {
 }
 ```
 
-Implementors of `FooBar` must also implement `Foo`, like this:
+`FooBar`の実装者は`Foo`もまた実装しなければなりません。以下のようになります。
 
 ```rust
 # trait Foo {
@@ -413,7 +375,7 @@ impl FooBar for Baz {
 }
 ```
 
-If we forget to implement `Foo`, Rust will tell us:
+もし`Foo`の実装を忘れると、Rustは以下のように知らせます。
 
 ```text
 error: the trait `main::Foo` is not implemented for the type `main::Baz` [E0277]
