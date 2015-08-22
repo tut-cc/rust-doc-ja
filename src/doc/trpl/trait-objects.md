@@ -1,16 +1,11 @@
-% Trait Objects
+% トレイトオブジェクト
 
-When code involves polymorphism, there needs to be a mechanism to determine
-which specific version is actually run. This is called ‘dispatch’. There are
-two major forms of dispatch: static dispatch and dynamic dispatch. While Rust
-favors static dispatch, it also supports dynamic dispatch through a mechanism
-called ‘trait objects’.
+コードがポリモーフィズムを伴う場合、実際に実行される対象を特定するためのメカニズムが必要です。
+これはディスパッチと呼ばれます。ディスパッチには静的ディスパッチと動的ディスパッチという2つの形式があります。Rustは静的ディスパッチを支持していますが、'トレイトオブジェクト'と呼ばれるメカニズムを用いることで動的ディスパッチについても対応しています。
 
-## Background
+## 背景
 
-For the rest of this chapter, we’ll need a trait and some implementations.
-Let’s make a simple one, `Foo`. It has one method that is expected to return a
-`String`.
+後に必要となるので、ここでトレイトと幾つかの実装を示しておきます。ここでは単純に`Foo`としましょう。これは`String`型の値を返す関数を1つ持っています。
 
 ```rust
 trait Foo {
@@ -18,7 +13,7 @@ trait Foo {
 }
 ```
 
-We’ll also implement this trait for `u8` and `String`:
+このトレイトを`u8`と`String`のために実装します。
 
 ```rust
 # trait Foo { fn method(&self) -> String; }
@@ -32,9 +27,8 @@ impl Foo for String {
 ```
 
 
-## Static dispatch
-
-We can use this trait to perform static dispatch with trait bounds:
+## 静的ディスパッチ
+トレイト束縛による静的ディスパッチを実現するために、このトレイトを使うことができます。
 
 ```rust
 # trait Foo { fn method(&self) -> String; }
@@ -53,10 +47,7 @@ fn main() {
 }
 ```
 
-Rust uses ‘monomorphization’ to perform static dispatch here. This means that
-Rust will create a special version of `do_something()` for both `u8` and
-`String`, and then replace the call sites with calls to these specialized
-functions. In other words, Rust generates something like this:
+Rustはここで静的ディスパッチを実現するために、'モノモーフィゼーション'を用います。これはRustが`u8`専用、`String`専用の`do_something()`をそれぞれ作成し、その専用の関数を宛がうように呼び出しの部分を書き換えるという意味です。言い換えれば、Rustはこのようなコードを生成します。
 
 ```rust
 # trait Foo { fn method(&self) -> String; }
@@ -79,45 +70,24 @@ fn main() {
 }
 ```
 
-This has a great upside: static dispatch allows function calls to be
-inlined because the callee is known at compile time, and inlining is
-the key to good optimization. Static dispatch is fast, but it comes at
-a tradeoff: ‘code bloat’, due to many copies of the same function
-existing in the binary, one for each type.
+これは素晴らしい利点です。呼び出し先はコンパイル時に分かっているため、静的ディスパッチは関数呼び出しをインライン化することができます。インライン化は優れた最適化の鍵です。静的ディスパッチは高速ですが、トレードオフとしてそれぞれの型ごとに同じ関数を多くコピーするため、バイナリサイズが膨張してしまいます。これは'code bloat'[^code_bloat]と呼ばれています。
 
-Furthermore, compilers aren’t perfect and may “optimize” code to become slower.
-For example, functions inlined too eagerly will bloat the instruction cache
-(cache rules everything around us). This is part of the reason that `#[inline]`
-and `#[inline(always)]` should be used carefully, and one reason why using a
-dynamic dispatch is sometimes more efficient.
+その上、コンパイラは完璧ではなく、"最適化"したコードが遅くなってしまうこともあります。
+例えば、あまりにも熱心な関数のインライン化は、命令キャッシュ(キャッシュはマシンの環境全てを支配しています)を膨張させてしまいます。それが`#[inline]`や`#[inline(always)]`を慎重に使うべきである理由の1つであり、動的ディスパッチが度々静的ディスパッチよりも効率的である理由の1つなのです。
 
-However, the common case is that it is more efficient to use static dispatch,
-and one can always have a thin statically-dispatched wrapper function that does
-a dynamic dispatch, but not vice versa, meaning static calls are more flexible.
-The standard library tries to be statically dispatched where possible for this
-reason.
+しかしながら、一般的なケースでは静的ディスパッチを使用する方が効率的であり、また、動的ディスパッチを行う薄い静的ディスパッチラッパー関数を持つことは常に可能ですが、その逆はできません。これは静的ディスパッチの方が柔軟性に富むことを示唆しています。標準ライブラリは上記の理由から可能であれば静的ディスパッチを試みます。
 
-## Dynamic dispatch
+## 動的ディスパッチ
 
-Rust provides dynamic dispatch through a feature called ‘trait objects’. Trait
-objects, like `&Foo` or `Box<Foo>`, are normal values that store a value of
-*any* type that implements the given trait, where the precise type can only be
-known at runtime.
+Rustは'トレイトオブジェクト'と呼ばれる機能によって動的ディスパッチを提供しています。トレイトオブジェクトは`&Foo`か`Box<Foo>`[^Box]の様に記述され、実行時に型が判明する特定のトレイトを実装している*あらゆる*型の値を格納します。
 
-A trait object can be obtained from a pointer to a concrete type that
-implements the trait by *casting* it (e.g. `&x as &Foo`) or *coercing* it
-(e.g. using `&x` as an argument to a function that takes `&Foo`).
+トレイトオブジェクトはトレイトを実装した具体的な型のポインタから*キャスト*する(e.g. `&x as &Foo`)か、*型変換*する(e.g. `&x`を関数の引数で`&Foo`として受け取る)ことで取得できます。
 
-These trait object coercions and casts also work for pointers like `&mut T` to
-`&mut Foo` and `Box<T>` to `Box<Foo>`, but that’s all at the moment. Coercions
-and casts are identical.
+これらトレイトオブジェクトの型変換とキャストは`&mut T`から`&mut Foo`へ、`Box<T>`から`Box<Foo>`へ、というようにどちらもポインタに対する操作ですが、今はこれがトレイトオブジェクトの全てです。なお型変換とキャストは実質同一です。
 
-This operation can be seen as ‘erasing’ the compiler’s knowledge about the
-specific type of the pointer, and hence trait objects are sometimes referred to
-as ‘type erasure’.
+この操作がまるで特定のポインタの型を消去しているように見えることから、トレイトオブジェクトは時に'type erasure(型消去)'とも呼ばれます。
 
-Coming back to the example above, we can use the same trait to perform dynamic
-dispatch with trait objects by casting:
+上記の例に戻ってみると、私たちはトレイトオブジェクトを用いた動的ディスパッチ実現のために、キャストによって同一のトレイトを使用することができます。
 
 ```rust
 # trait Foo { fn method(&self) -> String; }
@@ -134,7 +104,7 @@ fn main() {
 }
 ```
 
-or by coercing:
+型変換を用いると、
 
 ```rust
 # trait Foo { fn method(&self) -> String; }
@@ -150,43 +120,24 @@ fn main() {
     do_something(&x);
 }
 ```
+トレイトオブジェクトを受け取った関数が`Foo`を実装した特定の型毎に特殊化されることはありません。関数は1つだけ生成され、多くの場合(とはいえ常にではありませんが)code bloatは少なく済みます。しかしながら、この操作は低速な仮想関数の呼び出しを必要とし、更にインライン化と関連する最適化の機会を阻害するといったコストが伴います。
 
-A function that takes a trait object is not specialized to each of the types
-that implements `Foo`: only one copy is generated, often (but not always)
-resulting in less code bloat. However, this comes at the cost of requiring
-slower virtual function calls, and effectively inhibiting any chance of
-inlining and related optimizations from occurring.
+### なぜポインタなのか？
 
-### Why pointers?
+(訳注: 恐らく第1パラグラフで静的ディスパッチが有効な場合について話し、続いて動的ディスパッチの場合の話をしています)
+Rustはガーベジコレクタによって管理される多くの言語とは異なり、デフォルトではポインタの参照先に値を配置するようなことはしませんが、それぞれの型の値が異なるサイズを持つことができます。コンパイル時に値のサイズを知っていることは、関数へ引数として渡されるような値を保持するためにスタックに移したり、ヒープ上にメモリをアロケートしたり(または開放したり)するために重要です。
 
-Rust does not put things behind a pointer by default, unlike many managed
-languages, so types can have different sizes. Knowing the size of the value at
-compile time is important for things like passing it as an argument to a
-function, moving it about on the stack and allocating (and deallocating) space
-on the heap to store it.
+`Foo`のために、私たちは`String`(24 bytes)、`u8`(1 byte)、もしくは依存しているクレイト(訳注:クレイトは他の言語では'ライブラリ'や'パッケージ'とも呼ばれるものです)のうち(全く中身の無い)`Foo`を実装しているいずれかの型の値を格納する必要があります。ポインタ無しで値を格納した場合、その直後の動作が正しいかどうかを保証する方法がありません。型によって値のサイズがそれぞれ異なるからです。
 
-For `Foo`, we would need to have a value that could be at least either a
-`String` (24 bytes) or a `u8` (1 byte), as well as any other type for which
-dependent crates may implement `Foo` (any number of bytes at all). There’s no
-way to guarantee that this last point can work if the values are stored without
-a pointer, because those other types can be arbitrarily large.
+トレイトオブジェクトを渡したとき、渡されるのはポインタのサイズのみです。ポインタの参照先に値を配置するということは、変数が値自体のサイズに依存しなくなるということであり、これによって1つの変数に異なる型の値を格納できるようになります。
 
-Putting the value behind a pointer means the size of the value is not relevant
-when we are tossing a trait object around, only the size of the pointer itself.
+### トレイトオブジェクトの再現
 
-### Representation
+トレイトの関数は、伝統的に'vtable'(これはコンパイラによって作成、管理されます)と呼ばれる特別な関数ポインタのレコードを介してトレイトオブジェクトから呼び出すことができます。
 
-The methods of the trait can be called on a trait object via a special record
-of function pointers traditionally called a ‘vtable’ (created and managed by
-the compiler).
+トレイトオブジェクトは単純ですが難解です。核となる表現とレイアウトは非常に単純ですが、複雑なエラーメッセージを吐いたり、予期せぬ振る舞いが見つかったりします。
 
-Trait objects are both simple and complicated: their core representation and
-layout is quite straight-forward, but there are some curly error messages and
-surprising behaviors to discover.
-
-Let’s start simple, with the runtime representation of a trait object. The
-`std::raw` module contains structs with layouts that are the same as the
-complicated built-in types, [including trait objects][stdraw]:
+単純な例として、トレイトオブジェクトの実行時の再現から始めましょう。`std::raw`モジュールは複雑なビルドインの型と同じレイアウトの構造体を格納しており、[トレイトオブジェクトも含まれています][stdraw]。
 
 ```rust
 # mod foo {
@@ -199,18 +150,11 @@ pub struct TraitObject {
 
 [stdraw]: ../std/raw/struct.TraitObject.html
 
-That is, a trait object like `&Foo` consists of a ‘data’ pointer and a ‘vtable’
-pointer.
+つまり、`&Foo`というトレイトオブジェクトは'data'ポインタと'vtable'ポインタから成るわけです。
 
-The data pointer addresses the data (of some unknown type `T`) that the trait
-object is storing, and the vtable pointer points to the vtable (‘virtual method
-table’) corresponding to the implementation of `Foo` for `T`.
+dataポインタはトレイトオブジェクトに格納されている(幾つか考えられる不明瞭な型`T`の)データにアドレッシングされており、vtableポインタは`T`のための`Foo`の実装に対応しているvtable('virtual method table')を指しています。
 
-
-A vtable is essentially a struct of function pointers, pointing to the concrete
-piece of machine code for each method in the implementation. A method call like
-`trait_object.method()` will retrieve the correct pointer out of the vtable and
-then do a dynamic call of it. For example:
+vtableは本質的には関数ポインタの構造体で、各ポインタはそれぞれのメソッドの実装の機械語を指しています。`trait_object.method()`のようなメソッド呼び出しを行うと、vtableの中から適切なポインタを取り出し、動的に呼び出しを行います。例えば、
 
 ```rust,ignore
 struct FooVtable {
@@ -223,19 +167,18 @@ struct FooVtable {
 // u8:
 
 fn call_method_on_u8(x: *const ()) -> String {
-    // the compiler guarantees that this function is only called
-    // with `x` pointing to a u8
+    // `x`がu8を指しているとき、コンパイラはこの関数だけが呼ばれることを保証します
     let byte: &u8 = unsafe { &*(x as *const u8) };
 
     byte.method()
 }
 
 static Foo_for_u8_vtable: FooVtable = FooVtable {
-    destructor: /* compiler magic */,
+    destructor: /* コンパイラマジック */,
     size: 1,
     align: 1,
 
-    // cast to a function pointer
+    // 関数ポインタへキャスト
     method: call_method_on_u8 as fn(*const ()) -> String,
 };
 
@@ -243,16 +186,15 @@ static Foo_for_u8_vtable: FooVtable = FooVtable {
 // String:
 
 fn call_method_on_String(x: *const ()) -> String {
-    // the compiler guarantees that this function is only called
-    // with `x` pointing to a String
+    // `x`がStringを指しているとき、コンパイラはこの関数だけが呼ばれることを保証します
     let string: &String = unsafe { &*(x as *const String) };
 
     string.method()
 }
 
 static Foo_for_String_vtable: FooVtable = FooVtable {
-    destructor: /* compiler magic */,
-    // values for a 64-bit computer, halve them for 32-bit ones
+    destructor: /* コンパイラマジック */,
+    // 64-bitコンピュータのための値を32-bitコンピュータのために半分にしておきます
     size: 24,
     align: 8,
 
@@ -260,19 +202,9 @@ static Foo_for_String_vtable: FooVtable = FooVtable {
 };
 ```
 
-The `destructor` field in each vtable points to a function that will clean up
-any resources of the vtable’s type, for `u8` it is trivial, but for `String` it
-will free the memory. This is necessary for owning trait objects like
-`Box<Foo>`, which need to clean-up both the `Box` allocation as well as the
-internal type when they go out of scope. The `size` and `align` fields store
-the size of the erased type, and its alignment requirements; these are
-essentially unused at the moment since the information is embedded in the
-destructor, but will be used in the future, as trait objects are progressively
-made more flexible.
+関数を指している各vtableに存在する`destructor`フィールドは、それぞれのvtableの型に応じてリソースの解放を行います。ここでは`u8`は単純な型なので何もしませんが、`String`はメモリの解放を行います。このフィールドはスコープから出た時の値や、`Box<Foo>`のように`Box`によってアロケートした自作トレイトオブジェクトのリソースを解放するのに必要です。`size`及び`align`フィールドは消去された型のサイズとアライメント要件です。この2つの情報はデストラクタに組み込まれているため、現時点では基本的に使われていませんが、将来的にトレイトオブジェクトがより柔軟になれば使われるようになるでしょう。
 
-Suppose we’ve got some values that implement `Foo`, then the explicit form of
-construction and use of `Foo` trait objects might look a bit like (ignoring the
-type mismatches: they’re all just pointers anyway):
+仮に私たちが`Foo`を実装した値を幾つか持っているとしましょう。以下の明示的な形式で値を生成する方法と、これまでに紹介した`Foo`のトレイトオブジェクトを使う方法は少しだけ似ているかもしれません。(とにかく全てポインタにすることで型の不一致を無視しています)
 
 ```rust,ignore
 let a: String = "foo".to_string();
@@ -280,17 +212,17 @@ let x: u8 = 1;
 
 // let b: &Foo = &a;
 let b = TraitObject {
-    // store the data
+    // データを保存
     data: &a,
-    // store the methods
+    // メソッドを保存
     vtable: &Foo_for_String_vtable
 };
 
 // let y: &Foo = x;
 let y = TraitObject {
-    // store the data
+    // データを保存
     data: &x,
-    // store the methods
+    // メソッドを保存
     vtable: &Foo_for_u8_vtable
 };
 
@@ -301,6 +233,8 @@ let y = TraitObject {
 (y.vtable.method)(y.data);
 ```
 
-If `b` or `y` were owning trait objects (`Box<Foo>`), there would be a
-`(b.vtable.destructor)(b.data)` (respectively `y`) call when they went out of
-scope.
+---
+
+[^code_bloat] 訳注: [Wikipediaの記事](https://en.wikipedia.org/wiki/Code_bloat)もあります
+
+[^Box] 訳注: Boxはヒープを指すポインタの型です、[モジュールはこちら](https://doc.rust-lang.org/std/boxed/index.html)
