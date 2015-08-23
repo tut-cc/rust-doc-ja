@@ -1,13 +1,8 @@
-% Generics
+# ジェネリクス
 
-Sometimes, when writing a function or data type, we may want it to work for
-multiple types of arguments. Luckily, Rust has a feature that gives us a better
-way: generics. Generics are called ‘parametric polymorphism’ in type theory,
-which means that they are types or functions that have multiple forms (‘poly’
-is multiple, ‘morph’ is form) over a given parameter (‘parametric’).
+度々、関数やデータ型を書いていると、引数が複数の型に対応したものが欲しくなることがあります。Rustでは、ジェネリクスを用いてそれを実現しています。ジェネリクスは型理論において'パラメトリック多相(parametric polymorphism)'と呼ばれており、与えられたパラメータにより('parametric')型や関数が多数の様相('poly'は「多様」、'morph'は「様相」を意味します)(訳注: ここで「様相」は型を指します)を持つことをそう呼びます。
 
-Anyway, enough with type theory, let’s check out some generic code. Rust’s
-standard library provides a type, `Option<T>`, that’s generic:
+さて、型理論はこれで十分です。続いてジェネリックなコードについてチェックしてみましょう。Rustが標準ライブラリで提供している型`Option<T>`はジェネリックです。
 
 ```rust
 enum Option<T> {
@@ -16,20 +11,13 @@ enum Option<T> {
 }
 ```
 
-The `<T>` part, which you’ve seen a few times before, indicates that this is
-a generic data type. Inside the declaration of our enum, wherever we see a `T`,
-we substitute that type for the same type used in the generic. Here’s an
-example of using `Option<T>`, with some extra type annotations:
+`<T>`の部分は、前に何度か見たことがあると思いますが、ジェネリックなデータ型であることを示しています。enumの宣言内にある`T`は同じ型に置き換えられます。型注釈を用いた`Option<T>`の使用例が以下になります。
 
 ```rust
 let x: Option<i32> = Some(5);
 ```
 
-In the type declaration, we say `Option<i32>`. Note how similar this looks to
-`Option<T>`. So, in this particular `Option`, `T` has the value of `i32`. On
-the right-hand side of the binding, we do make a `Some(T)`, where `T` is `5`.
-Since that’s an `i32`, the two sides match, and Rust is happy. If they didn’t
-match, we’d get an error:
+型の宣言は`Option<i32>`とします。`Option<T>`とどこが違って見えますか？そう、この`Option`では`T`は`i32`の値を持つのです。このlet束縛の右辺の`Some(T)`では`T`は`5`となります。`i32`であれば両辺の型が一致するため、正しく型推論されます。型が不一致であれば以下のようなエラーが発生します。
 
 ```rust,ignore
 let x: Option<f64> = Some(5);
@@ -37,17 +25,16 @@ let x: Option<f64> = Some(5);
 // found `core::option::Option<_>` (expected f64 but found integral variable)
 ```
 
-That doesn’t mean we can’t make `Option<T>`s that hold an `f64`! They just have
-to match up:
+`f64`で特殊化した`Option<T>`が作れないという意味ではありませんからね！リテラルの型も正しく合わせなければなりません。
 
 ```rust
 let x: Option<i32> = Some(5);
 let y: Option<f64> = Some(5.0f64);
 ```
 
-This is just fine. One definition, multiple uses.
+これだけで結構です。1つ定義すれば様々な型で用いることができます。
 
-Generics don’t have to only be generic over one type. Consider another type from Rust’s standard library that’s similar, `Result<T, E>`:
+ジェネリクスは1つの型だけに対応しているではありません。Rustの標準ライブラリに入っている`Result<T, E>`について考えてみましょう。
 
 ```rust
 enum Result<T, E> {
@@ -56,8 +43,7 @@ enum Result<T, E> {
 }
 ```
 
-This type is generic over _two_ types: `T` and `E`. By the way, the capital letters
-can be any letter you’d like. We could define `Result<T, E>` as:
+この型では`T`と`E`の_2つ_がジェネリックです。ちなみに、大文字の部分はあなたの好きにしてもらって構いません。もしあなたが望むなら`Result<T, E>`を、
 
 ```rust
 enum Result<A, Z> {
@@ -66,15 +52,13 @@ enum Result<A, Z> {
 }
 ```
 
-if we wanted to. Convention says that the first generic parameter should be
-`T`, for ‘type’, and that we use `E` for ‘error’. Rust doesn’t care, however.
+のように定義しても良いです。"Type"から第1ジェネリックパラメータは`T`とすべきですし、"Error"から`E`とするのが慣例なのですが、Rustは気にしません。
 
-The `Result<T, E>` type is intended to be used to return the result of a
-computation, and to have the ability to return an error if it didn’t work out.
+`Result<T, E>`は計算の結果を返すのが目的の型であり、失敗した場合にエラーを示す値を返す機能を持っています。
 
-## Generic functions
+## ジェネリック関数
 
-We can write functions that take generic types with a similar syntax:
+私たちは似た構文でジェネリックな型をとる関数を記述することができます。
 
 ```rust
 fn takes_anything<T>(x: T) {
@@ -82,10 +66,9 @@ fn takes_anything<T>(x: T) {
 }
 ```
 
-The syntax has two parts: the `<T>` says “this function is generic over one
-type, `T`”, and the `x: T` says “x has the type `T`.”
+構文は2つのパーツから成ります。`<T>`は"この関数は`T`というパラメータを持つジェネリック関数である"ということであり、`x: T`は"xは`T`型である"という意味です。
 
-Multiple arguments can have the same generic type:
+複数の引数が同じジェネリック型を持つこともできます。
 
 ```rust
 fn takes_two_of_the_same_things<T>(x: T, y: T) {
@@ -93,7 +76,7 @@ fn takes_two_of_the_same_things<T>(x: T, y: T) {
 }
 ```
 
-We could write a version that takes multiple types:
+複数の型を取るバージョンを記述することも可能です。
 
 ```rust
 fn takes_two_things<T, U>(x: T, y: U) {
@@ -101,14 +84,14 @@ fn takes_two_things<T, U>(x: T, y: U) {
 }
 ```
 
-Generic functions are most useful with ‘trait bounds’, which we’ll cover in the
+ジェネリック関数は`トレイト束縛`と一緒に使えば最高に便利になります。これについてはトレイトの章で解説しています。
 [section on traits][traits].
 
-[traits]: traits.html
+[traits]: https://doc.rust-lang.org/stable/book/traits.html
 
-## Generic structs
+## ジェネリック構造体
 
-You can store a generic type in a `struct` as well:
+あなたにもジェネリック型を保存する`struct`を書くことができます。
 
 ```
 struct Point<T> {
@@ -120,5 +103,4 @@ let int_origin = Point { x: 0, y: 0 };
 let float_origin = Point { x: 0.0, y: 0.0 };
 ```
 
-Similarly to functions, the `<T>` is where we declare the generic parameters,
-and we then use `x: T` in the type declaration, too.
+関数と同様に、`<T>`でジェネリックパラメータを宣言し、型を宣言するときは`x: T`とします。
