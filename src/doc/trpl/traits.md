@@ -1,4 +1,4 @@
-% トレイト
+# トレイト
 
 あなたは[method syntax][methodsyntax]で関数を呼び出すために用いた`impl`キーワードを覚えていますか？
 
