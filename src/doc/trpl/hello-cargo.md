@@ -175,7 +175,7 @@ Rustを本格的に学習するために2つの方法を提案します。
 
 熟練されたプログラマーには`Learn Rust`をおすすめします。Rustの動向に興味があるのならば`Syntax and Semantics`をおすすめします。
 
-好みは人それぞれです。あなたが興味のある方を選択してください。
+異なる背景を持つ2つの方法はどちらも楽しめる内容でしょう。好みは人それぞれです。あなたが興味のある方を選択してください。
 
 [learnrust]: learn-rust.html
 [syntax]: syntax-and-semantics.html
