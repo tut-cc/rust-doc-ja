@@ -84,8 +84,7 @@ fn takes_two_things<T, U>(x: T, y: U) {
 }
 ```
 
-ジェネリック関数は`トレイト束縛`と一緒に使えば最高に便利になります。これについてはトレイトの章で解説しています。
-[section on traits][traits].
+ジェネリック関数は'トレイト束縛'と一緒に使えば最高に便利になります。これについては[トレイトの章][traits]で解説しています.
 
 [traits]: https://doc.rust-lang.org/stable/book/traits.html
 
@@ -93,7 +92,7 @@ fn takes_two_things<T, U>(x: T, y: U) {
 
 あなたにもジェネリック型を保存する`struct`を書くことができます。
 
-```
+``` rust
 struct Point<T> {
     x: T,
     y: T,
