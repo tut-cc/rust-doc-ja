@@ -16,7 +16,7 @@ impl Circle {
 }
 ```
 
-[methodsyntax]: method-syntax.html
+[methodsyntax]: https://doc.rust-lang.org/stable/book/method-syntax.html
 
 トレイトはそれに似ていますが、定義するときにはシグネチャだけを記述し、その後構造体毎に実装します。
 
@@ -57,9 +57,9 @@ error: type `T` does not implement any method in scope named `area`
 `T`はありとあらゆる型であるため、Rustは`.area()`メソッドが`T`について実装されているか確信を持てません。しかしジェネリック型`T`に対して'トレイトによる制約'を加えることで、`.area()`メソッドが実装されていることを保証できます。
 
 ```rust
-# trait HasArea {
-#     fn area(&self) -> f64;
-# }
+trait HasArea {
+    fn area(&self) -> f64;
+}
 fn print_area<T: HasArea>(shape: T) {
     println!("This shape has an area of {}", shape.area());
 }
@@ -157,14 +157,15 @@ impl HasArea for i32 {
 ```
 
 しかし例え可能であったとしても、プリミティブ型が持つメソッドを実装する方法としては望ましくないと考えられています。
+
 ここまでくると何でもありな様に見えますが、手が負えなくなるのを防ぐためにトレイトの実装周りには2つの制限が設けられています。第1に、あなたのスコープ内で定義されていないトレイトは適用されません。例えば、標準ライブラリは`File`にI/O機能を追加するための[`write`][write]トレイトを提供します。デフォルトでは、`File`はそのメソッドを持っていません。
 
-[write]: ../std/io/trait.Write.html
+[write]: https://doc.rust-lang.org/std/io/trait.Write.html
 
 ```rust,ignore
 let mut f = std::fs::File::open("foo.txt").ok().expect("Couldn’t open foo.txt");
 let result = f.write("whatever".as_bytes());
-# result.unwrap(); // ignore the error
+result.unwrap(); // ignore the error
 ```
 
 エラーは以下のとおりです。
@@ -183,7 +184,7 @@ use std::io::Write;
 
 let mut f = std::fs::File::open("foo.txt").ok().expect("Couldn’t open foo.txt");
 let result = f.write("whatever".as_bytes());
-# result.unwrap(); // ignore the error
+result.unwrap(); // ignore the error
 ```
 
 これはエラー無しでコンパイルされます。
@@ -194,7 +195,7 @@ let result = f.write("whatever".as_bytes());
 
 最後に1つ。トレイトによって束縛されたジェネリック関数は`monomorphization`(mono:単一の、morph:形式)されるため、静的ディスパッチが行われます。一体どういう意味でしょうか？詳細については、[トレイトオブジェクト][to]の章をチェックしてください。
 
-[to]: trait-objects.html
+[to]: https://doc.rust-lang.org/stable/book/trait-objects.html
 
 # 複数のトレイト束縛
 
@@ -221,7 +222,7 @@ fn foo<T: Clone + Debug>(x: T) {
 
 # Where 節
 
-ジェネリック型とトレイト拘束が少ないうちは良いのですが、数が増えるといよいよこの記法では不便になってきます。
+ジェネリック型とトレイト拘束が少ないうちは良いのですが、数が増えるといよいよこの構文では不便になってきます。
 
 ```
 use std::fmt::Debug;
@@ -258,7 +259,7 @@ fn main() {
 }
 ```
 
-`foo()`は先程見せたままの記法で、`bar()`は`where`節を用いています。あなたは型パラメータの定義時ではなく、引数リストの後ろに`where`を追加することでトレイト束縛を記述できます。長いリストであれば、空白を加えることもできます。
+`foo()`は先程見せたままの構文で、`bar()`は`where`節を用いています。あなたは型パラメータの定義時ではなく、引数リストの後ろに`where`を追加することでトレイト束縛を記述できます。長いリストであれば、空白を加えることもできます。
 
 ```
 use std::fmt::Debug;
@@ -273,8 +274,8 @@ fn bar<T, K>(x: T, y: K)
 }
 ```
 
-この柔軟な記法により、複雑な状況であっても可読性を保つことができます。
-また、`where`は基本的な記法よりも強力です。例えば、
+この柔軟な構文により、複雑な状況であっても可読性を保つことができます。
+また、`where`は基本的な構文よりも強力です。例えば、
 
 ```
 trait ConvertTo<Output> {
@@ -315,10 +316,10 @@ trait Foo {
 `Foo`トレイトの実装者は`bar()`を実装する必要がありますが、`baz()`を実装する必要はありません。`baz()`にはデフォルトの動作が与えられているからです。実装者の選択次第ではこのデフォルトの動作をオーバーライドすることも可能です。
 
 ```rust
-# trait Foo {
-# fn bar(&self);
-# fn baz(&self) { println!("We called baz."); }
-# }
+trait Foo {
+    fn bar(&self);
+    fn baz(&self) { println!("We called baz."); }
+}
 struct UseDefault;
 
 impl Foo for UseDefault {
@@ -357,12 +358,12 @@ trait FooBar : Foo {
 `FooBar`の実装者は`Foo`もまた実装しなければなりません。以下のようになります。
 
 ```rust
-# trait Foo {
-#     fn foo(&self);
-# }
-# trait FooBar : Foo {
-#     fn foobar(&self);
-# }
+trait Foo {
+    fn foo(&self);
+}
+trait FooBar : Foo {
+    fn foobar(&self);
+}
 struct Baz;
 
 impl Foo for Baz {
