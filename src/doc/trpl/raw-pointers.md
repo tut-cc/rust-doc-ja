@@ -1,36 +1,21 @@
-% Raw Pointers
+# 生ポインタ
 
-Rust has a number of different smart pointer types in its standard library, but
-there are two types that are extra-special. Much of Rust’s safety comes from
-compile-time checks, but raw pointers don’t have such guarantees, and are
-[unsafe][unsafe] to use.
+Rustは標準ライブラリにスマートポインタ(訳注: スコープの終端で参照先のリソースを開放してくれるポインタ、C++の概念)の型を幾つか用意していますが、加えて2つ特別な型があります。Rustの安全性の多くはコンパイル時のチェックから来ていますが、生ポインタや[unsafe](https://doc.rust-lang.org/stable/book/unsafe.html)を使用するとそれらのような保証が得られません。
 
-`*const T` and `*mut T` are called ‘raw pointers’ in Rust. Sometimes, when
-writing certain kinds of libraries, you’ll need to get around Rust’s safety
-guarantees for some reason. In this case, you can use raw pointers to implement
-your library, while exposing a safe interface for your users. For example, `*`
-pointers are allowed to alias, allowing them to be used to write
-shared-ownership types, and even thread-safe shared memory types (the `Rc<T>`
-and `Arc<T>` types are both implemented entirely in Rust).
+`*const T`と`*mut T`はRustにおいて'生ポインタ'と呼ばれます。時々、特定の種類のライブラリを書く時に、あなたは幾つかの理由でRustが行う安全性の保証を避けなければならないことがあります。今回のケースでは、ユーザに安全なインターフェースを提供するライブラリを実装する際に生ポインタを使用できます。例えば、ポインタは * を使うことでエイリアスとして振る舞うこともできるので、所有権を共有する型や、スレッドセーフな共有メモリ型でさえも実装することができます。(`Rc<T>`と`Arc<T>`型は完全にRustのみで実装されています)
 
-Here are some things to remember about raw pointers that are different than
-other pointer types. They:
 
-- are not guaranteed to point to valid memory and are not even
-  guaranteed to be non-null (unlike both `Box` and `&`);
-- do not have any automatic clean-up, unlike `Box`, and so require
-  manual resource management;
-- are plain-old-data, that is, they don't move ownership, again unlike
-  `Box`, hence the Rust compiler cannot protect against bugs like
-  use-after-free;
-- lack any form of lifetimes, unlike `&`, and so the compiler cannot
-  reason about dangling pointers; and
-- have no guarantees about aliasing or mutability other than mutation
-  not being allowed directly through a `*const T`.
+以下は覚えておくべき生ポインタとその他のポインタ型との違いです。
 
-# Basics
+- 正しいメモリを指しているか保証されず、nullでないかどうかも保証されない(`Box`と`&`では保証される)
+- 自動的な後処理は一切行われず、`Box`とは異なり、手動によるリソースの管理が必要
+- plain-old-data型(訳注: メモリ上で連続して表現されるデータ、C言語のデータと互換を持つ構造とも)であるため、所有権を移譲できず、従ってRustのコンパイラはuse-after-free(訳注: 知らなければggr推奨です)のような脆弱性を防ぐことができない
+- 生存期間の機能が欠如しているため、`&`と異なり、コンパイラはダングリングポインタを推論できない
+- `*const T`を直接介した変更は拒むが、それ以外のエイリアシングや可変性に関する保証はない
 
-Creating a raw pointer is perfectly safe:
+# 基本
+
+完全に安全な生ポインタを作成してみます。
 
 ```rust
 let x = 5;
@@ -40,7 +25,7 @@ let mut y = 10;
 let raw_mut = &mut y as *mut i32;
 ```
 
-However, dereferencing one is not. This won’t work:
+しかしながら1つ目は参照することができないため、以下は動作しません。
 
 ```rust,ignore
 let x = 5;
@@ -49,7 +34,7 @@ let raw = &x as *const i32;
 println!("raw points at {}", *raw);
 ```
 
-It gives this error:
+このようなエラーが発生します。
 
 ```text
 error: dereference of unsafe pointer requires unsafe function or block [E0133]
@@ -57,8 +42,7 @@ error: dereference of unsafe pointer requires unsafe function or block [E0133]
                                  ^~~~
 ```
 
-When you dereference a raw pointer, you’re taking responsibility that it’s not
-pointing somewhere that would be incorrect. As such, you need `unsafe`:
+あなたが生ポインタを参照するとき、間違っている所を指していないという責任を負わなければなりません。ですので、あなたは`unsafe`を使う必要があります。
 
 ```rust
 let x = 5;
@@ -68,46 +52,28 @@ let points_at = unsafe { *raw };
 
 println!("raw points at {}", points_at);
 ```
-
-For more operations on raw pointers, see [their API documentation][rawapi].
-
-[unsafe]: unsafe.html
-[rawapi]: ../std/primitive.pointer.html
+生ポインタの操作に関する詳細は、[APIドキュメント](https://doc.rust-lang.org/stable/std/primitive.pointer.html)を参照してください。
 
 # FFI
 
-Raw pointers are useful for FFI: Rust’s `*const T` and `*mut T` are similar to
-C’s `const T*` and `T*`, respectfully. For more about this use, consult the
-[FFI chapter][ffi].
+生ポインタはFFI関係で役立ちます。Rustの`*const T`と`*mut T`はそれぞれCの`const T*`と`*mut T`に似ているからです。これについての詳細は、[FFIの章](https://doc.rust-lang.org/stable/book/ffi.html)を参照してください。
 
-[ffi]: ffi.html
+# 参照と生ポインタ
 
-# References and raw pointers
+実行時において、生ポインタと参照がデータの同じ部分を指すというのは同一の表現です。実際、unsafeを使っていない範囲においては`&T`は暗黙的に`*const T`へキャスト可能であり、`mut`の場合も同様です。(`value as *const T`及び`value as *mut T`へ明示的にキャストすることも可能です)
 
-At runtime, a raw pointer `*` and a reference pointing to the same piece of
-data have an identical representation. In fact, an `&T` reference will
-implicitly coerce to an `*const T` raw pointer in safe code and similarly for
-the `mut` variants (both coercions can be performed explicitly with,
-respectively, `value as *const T` and `value as *mut T`).
+反対に、`*const`から`&`へキャストするのは安全ではありません。`&T`は常に有効であるため、最低でも`*const T`は型`T`の有効な実体を指さなければなりません。その上、ポインタは参照のエイリアシングと可変性の規則も満たす必要があります。コンパイラは全ての参照についてこれらのプロパティが真であることを前提としているため、その生成方法によらず、生ポインタからのあらゆるキャストもまた真であることを断言できなければなりません。プログラマがこのことを保証*しなければならない*のです。
 
-Going the opposite direction, from `*const` to a reference `&`, is not safe. A
-`&T` is always valid, and so, at a minimum, the raw pointer `*const T` has to
-point to a valid instance of type `T`. Furthermore, the resulting pointer must
-satisfy the aliasing and mutability laws of references. The compiler assumes
-these properties are true for any references, no matter how they are created,
-and so any conversion from raw pointers is asserting that they hold. The
-programmer *must* guarantee this.
-
-The recommended method for the conversion is
+おすすめの変換の方法は以下のとおりです。
 
 ```rust
 let i: u32 = 1;
 
-// explicit cast
+// 明示的キャスト
 let p_imm: *const u32 = &i as *const u32;
 let mut m: u32 = 2;
 
-// implicit coercion
+// 暗黙的変換
 let p_mut: *mut u32 = &mut m;
 
 unsafe {
@@ -115,8 +81,4 @@ unsafe {
     let ref_mut: &mut u32 = &mut *p_mut;
 }
 ```
-
-The `&*x` dereferencing style is preferred to using a `transmute`. The latter
-is far more powerful than necessary, and the more restricted operation is
-harder to use incorrectly; for example, it requires that `x` is a pointer
-(unlike `transmute`).
+`&*x`によって参照するスタイルは`transmute`を用いるより好ましいです。後者は必要以上に強力ですし、より用途が限定されている操作の方が間違いにくいでしょう。例えば、前者の方法は`x`がポインタである必要があります。(`transmute`は異なります)
