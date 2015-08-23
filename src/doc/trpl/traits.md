@@ -224,7 +224,7 @@ fn foo<T: Clone + Debug>(x: T) {
 
 ジェネリック型とトレイト拘束が少ないうちは良いのですが、数が増えるといよいよこの構文では不便になってきます。
 
-```
+``` rust
 use std::fmt::Debug;
 
 fn foo<T: Clone, K: Clone + Debug>(x: T, y: K) {
@@ -238,7 +238,7 @@ fn foo<T: Clone, K: Clone + Debug>(x: T, y: K) {
 
 そこでRustは'`where`節'と呼ばれる解決策を用意しています。
 
-```
+``` rust
 use std::fmt::Debug;
 
 fn foo<T: Clone, K: Clone + Debug>(x: T, y: K) {
@@ -261,7 +261,7 @@ fn main() {
 
 `foo()`は先程見せたままの構文で、`bar()`は`where`節を用いています。あなたは型パラメータの定義時ではなく、引数リストの後ろに`where`を追加することでトレイト束縛を記述できます。長いリストであれば、空白を加えることもできます。
 
-```
+``` rust
 use std::fmt::Debug;
 
 fn bar<T, K>(x: T, y: K)
@@ -276,8 +276,8 @@ fn bar<T, K>(x: T, y: K)
 
 この柔軟な構文により、複雑な状況であっても可読性を保つことができます。
 また、`where`は基本的な構文よりも強力です。例えば、
-
-```
+(訳注: [std::convert::From](https://doc.rust-lang.org/std/convert/trait.From.html))
+``` rust
 trait ConvertTo<Output> {
     fn convert(&self) -> Output;
 }
