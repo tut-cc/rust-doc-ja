@@ -1,7 +1,7 @@
-% トレイトオブジェクト
+# トレイトオブジェクト
 
 コードがポリモーフィズムを伴う場合、実際に実行される対象を特定するためのメカニズムが必要です。
-これはディスパッチと呼ばれます。ディスパッチには静的ディスパッチと動的ディスパッチという2つの形式があります。Rustは静的ディスパッチを支持していますが、'トレイトオブジェクト'と呼ばれるメカニズムを用いることで動的ディスパッチについても対応しています。
+これはディスパッチと呼ばれます。ディスパッチには静的ディスパッチと動的ディスパッチという2つの主要な形式があります。Rustは静的ディスパッチを支持していますが、'トレイトオブジェクト'と呼ばれるメカニズムを用いることで動的ディスパッチについても対応しています。
 
 ## 背景
 
@@ -16,7 +16,8 @@ trait Foo {
 このトレイトを`u8`と`String`のために実装します。
 
 ```rust
-# trait Foo { fn method(&self) -> String; }
+trait Foo { fn method(&self) -> String; }
+
 impl Foo for u8 {
     fn method(&self) -> String { format!("u8: {}", *self) }
 }
@@ -31,9 +32,11 @@ impl Foo for String {
 トレイト束縛による静的ディスパッチを実現するために、このトレイトを使うことができます。
 
 ```rust
-# trait Foo { fn method(&self) -> String; }
-# impl Foo for u8 { fn method(&self) -> String { format!("u8: {}", *self) } }
-# impl Foo for String { fn method(&self) -> String { format!("string: {}", *self) } }
+trait Foo { fn method(&self) -> String; }
+
+impl Foo for u8 { fn method(&self) -> String { format!("u8: {}", *self) } }
+impl Foo for String { fn method(&self) -> String { format!("string: {}", *self) } }
+
 fn do_something<T: Foo>(x: T) {
     x.method();
 }
@@ -47,12 +50,14 @@ fn main() {
 }
 ```
 
-Rustはここで静的ディスパッチを実現するために、'モノモーフィゼーション(monomorphization)'を用います。これはRustが`u8`専用、`String`専用の`do_something()`をそれぞれ作成し、その専用の関数を宛がうように呼び出しの部分を書き換えるという意味です。言い換えれば、Rustはこのようなコードを生成します。
+Rustはここで静的ディスパッチを実現するために、'monomorphization(モノモーフィゼーション)'を用います。これはRustが`u8`専用、`String`専用の`do_something()`をそれぞれ作成し、それら専用の関数を宛がうように呼び出しの部分を書き換えるという意味です。言い換えれば、Rustはこのようなコードを生成します。
 
 ```rust
-# trait Foo { fn method(&self) -> String; }
-# impl Foo for u8 { fn method(&self) -> String { format!("u8: {}", *self) } }
-# impl Foo for String { fn method(&self) -> String { format!("string: {}", *self) } }
+trait Foo { fn method(&self) -> String; }
+
+impl Foo for u8 { fn method(&self) -> String { format!("u8: {}", *self) } }
+impl Foo for String { fn method(&self) -> String { format!("string: {}", *self) } }
+
 fn do_something_u8(x: u8) {
     x.method();
 }
@@ -70,29 +75,33 @@ fn main() {
 }
 ```
 
-これは素晴らしい利点です。呼び出し先はコンパイル時に分かっているため、静的ディスパッチは関数呼び出しをインライン化することができます。インライン化は優れた最適化の鍵です。静的ディスパッチは高速ですが、トレードオフとしてそれぞれの型ごとに同じ関数を多くコピーするため、バイナリサイズが膨張してしまいます。これは'code bloat'[^code_bloat]と呼ばれています。
+これは素晴らしい利点です。呼び出し先はコンパイル時に分かっているため、静的ディスパッチは関数呼び出しをインライン化することができます。インライン化は優れた最適化の鍵です。静的ディスパッチは高速ですが、トレードオフとしてそれぞれの型ごとに同じ関数を多くコピーするため、バイナリサイズが膨張してしまいます。これは'code bloat'(訳注: [Wikipediaの記事](https://en.wikipedia.org/wiki/Code_bloat)もあります)と呼ばれています。
 
 その上、コンパイラは完璧ではなく、"最適化"したコードが遅くなってしまうこともあります。
 例えば、あまりにも熱心な関数のインライン化は、命令キャッシュ(キャッシュはマシンの環境全てを支配しています)を膨張させてしまいます。それが`#[inline]`や`#[inline(always)]`を慎重に使うべきである理由の1つであり、動的ディスパッチが度々静的ディスパッチよりも効率的である理由の1つなのです。
 
-しかしながら、一般的なケースでは静的ディスパッチを使用する方が効率的であり、また、動的ディスパッチを行う薄い静的ディスパッチラッパー関数を持つことは常に可能ですが、その逆はできません。これは静的ディスパッチの方が柔軟性に富むことを示唆しています。標準ライブラリは上記の理由から可能であれば静的ディスパッチを試みます。
+しかしながら、一般的なケースでは静的ディスパッチを使用する方が効率的であり、また、動的ディスパッチを行う薄い静的ディスパッチラッパー関数を実装することは常に可能ですが、その逆はできません。これは静的ディスパッチの方が柔軟性に富むことを示唆しています。標準ライブラリは上記の理由から可能な限り静的ディスパッチで実装するよう心がけています。
+
+(訳注: 「動的ディスパッチを行う薄い静的ディスパッチラッパー関数は常に実装できるがその逆はできない」について
+静的ディスパッチはコンパイル時に定まるのに対し、動的ディスパッチは実行時に結果が分かります。従って、動的ディスパッチが伴う処理を静的ディスパッチ関数でラッピングし、半静的なディスパッチとすることは常に可能(原文で'thin'と形容しているのはこのため)ですが、動的ディスパッチで遷移した値を元に静的ディスパッチを行うことはできないと言うわけです。)
 
 ## 動的ディスパッチ
 
-Rustは'トレイトオブジェクト'と呼ばれる機能によって動的ディスパッチを提供しています。トレイトオブジェクトは`&Foo`か`Box<Foo>`[^Box]の様に記述され、実行時に型が判明する特定のトレイトを実装している*あらゆる*型の値を格納します。
+Rustは'トレイトオブジェクト'と呼ばれる機能によって動的ディスパッチを提供しています。トレイトオブジェクトは`&Foo`か`Box<Foo>`(訳注: Boxはヒープに確保された値を指すポインタの型です、[モジュールはこちら](https://doc.rust-lang.org/std/boxed/index.html))の様に記述され、実行時に定まる特定のトレイトを実装している*あらゆる*型の値を格納します。
 
 トレイトオブジェクトはトレイトを実装した具体的な型のポインタから*キャスト*する(e.g. `&x as &Foo`)か、*型変換*する(e.g. `&x`を関数の引数で`&Foo`として受け取る)ことで取得できます。
 
 これらトレイトオブジェクトの型変換とキャストは`&mut T`から`&mut Foo`へ、`Box<T>`から`Box<Foo>`へ、というようにどちらもポインタに対する操作ですが、今はこれがトレイトオブジェクトの全てです。なお型変換とキャストは実質同一です。
 
-この操作がまるで特定のポインタの型を消去しているように見えることから、トレイトオブジェクトは時に'type erasure(型消去)'とも呼ばれます。
+この操作がまるでポインタの具体的な型を消去しているように見えることから、トレイトオブジェクトは時に'type erasure(型消去)'とも呼ばれます。
 
-上記の例に戻ってみると、私たちはトレイトオブジェクトを用いた動的ディスパッチ実現のために、キャストによって同一のトレイトを使用することができます。
+上記の例に戻ってみると、私たちはトレイトオブジェクトを用いた動的ディスパッチ実現のために、キャストによって共通のトレイトを使うことができます。
 
 ```rust
-# trait Foo { fn method(&self) -> String; }
-# impl Foo for u8 { fn method(&self) -> String { format!("u8: {}", *self) } }
-# impl Foo for String { fn method(&self) -> String { format!("string: {}", *self) } }
+trait Foo { fn method(&self) -> String; }
+
+impl Foo for u8 { fn method(&self) -> String { format!("u8: {}", *self) } }
+impl Foo for String { fn method(&self) -> String { format!("string: {}", *self) } }
 
 fn do_something(x: &Foo) {
     x.method();
@@ -107,9 +116,10 @@ fn main() {
 型変換を用いると、
 
 ```rust
-# trait Foo { fn method(&self) -> String; }
-# impl Foo for u8 { fn method(&self) -> String { format!("u8: {}", *self) } }
-# impl Foo for String { fn method(&self) -> String { format!("string: {}", *self) } }
+trait Foo { fn method(&self) -> String; }
+
+impl Foo for u8 { fn method(&self) -> String { format!("u8: {}", *self) } }
+impl Foo for String { fn method(&self) -> String { format!("string: {}", *self) } }
 
 fn do_something(x: &Foo) {
     x.method();
@@ -120,7 +130,7 @@ fn main() {
     do_something(&x);
 }
 ```
-トレイトオブジェクトを受け取った関数が`Foo`を実装した特定の型毎に特殊化されることはありません。関数は1つだけ生成され、多くの場合(とはいえ常にではありませんが)code bloatは少なく済みます。しかしながら、この操作は低速な仮想関数の呼び出しを必要とし、更にインライン化と関連する最適化の機会を阻害するといったコストが伴います。
+トレイトオブジェクトを受け取った関数が`Foo`を実装した特定の型毎に特殊化されることはありません。関数は1つだけ生成され、多くの場合(とはいえ常にではありませんが)code bloatは少なく済みます。しかしながら、この操作は低速な仮想関数の呼び出しを必要とし、更にインライン化と偶然起きうる最適化の機会を阻害するといったコストが伴います。
 
 ### なぜポインタなのか？
 
@@ -133,30 +143,28 @@ Rustはガーベジコレクタによって管理される多くの言語とは�
 
 ### トレイトオブジェクトの再現
 
-トレイトの関数は、伝統的に'vtable'(これはコンパイラによって作成、管理されます)と呼ばれる特別な関数ポインタのレコードを介してトレイトオブジェクトから呼び出すことができます。
+トレイトの関数はトレイトオブジェクト内の伝統的に'vtable'(これはコンパイラによって作成、管理されます)と呼ばれる特別な関数ポインタのレコードを介して呼び出すことができます。
 
 トレイトオブジェクトは単純ですが難解です。核となる表現とレイアウトは非常に単純ですが、複雑なエラーメッセージを吐いたり、予期せぬ振る舞いが見つかったりします。
 
-単純な例として、トレイトオブジェクトの実行時の再現から始めましょう。`std::raw`モジュールは複雑なビルドインの型と同じレイアウトの構造体を格納しており、[トレイトオブジェクトも含まれています][stdraw]。
+単純な例として、トレイトオブジェクトの実行時の再現から始めましょう。`std::raw`モジュールは複雑なビルドインの型と同じレイアウトの構造体を格納しており、[トレイトオブジェクトも含まれています](https://doc.rust-lang.org/std/raw/)。
 
 ```rust
-# mod foo {
-pub struct TraitObject {
-    pub data: *mut (),
-    pub vtable: *mut (),
+mod foo {
+    pub struct TraitObject {
+        pub data: *mut (),
+        pub vtable: *mut (),
+    }
 }
-# }
 ```
-
-[stdraw]: ../std/raw/struct.TraitObject.html
 
 つまり、`&Foo`というトレイトオブジェクトは'data'ポインタと'vtable'ポインタから成るわけです。
 
-dataポインタはトレイトオブジェクトに格納されている(幾つか考えられる不明瞭な型`T`の)データにアドレッシングされており、vtableポインタは`T`のための`Foo`の実装に対応しているvtable('virtual method table')を指しています。
+dataポインタはトレイトオブジェクトに格納されている(幾つか考えられる不明瞭な型`T`の)データにアドレッシングされており、vtableポインタは`T`のための`Foo`の実装に対応するvtable('virtual method table')を指しています。
 
 vtableは本質的には関数ポインタの構造体で、各ポインタはそれぞれのメソッドの実装の機械語を指しています。`trait_object.method()`のようなメソッド呼び出しを行うと、vtableの中から適切なポインタを取り出し、動的に呼び出しを行います。例えば、
 
-```rust,ignore
+```rust
 struct FooVtable {
     destructor: fn(*mut ()),
     size: usize,
@@ -206,7 +214,7 @@ static Foo_for_String_vtable: FooVtable = FooVtable {
 
 仮に私たちが`Foo`を実装した値を幾つか持っているとしましょう。以下の明示的な形式で値を生成する方法と、これまでに紹介した`Foo`のトレイトオブジェクトを使う方法は少しだけ似ているかもしれません。(とにかく全てポインタにすることで型の不一致を無視しています)
 
-```rust,ignore
+```rust
 let a: String = "foo".to_string();
 let x: u8 = 1;
 
@@ -235,6 +243,3 @@ let y = TraitObject {
 
 ---
 
-[^code_bloat] 訳注: [Wikipediaの記事](https://en.wikipedia.org/wiki/Code_bloat)もあります
-
-[^Box] 訳注: Boxはヒープを指すポインタの型です、[モジュールはこちら](https://doc.rust-lang.org/std/boxed/index.html)
