@@ -1,4 +1,5 @@
 % Guessing Game
+% 数当てゲーム
 
 For our first project, we’ll implement a classic beginner programming problem:
 the guessing game. Here’s how it works: Our program will generate a random
