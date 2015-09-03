@@ -1,49 +1,29 @@
-% Ownership
+# 所有権
 
-This guide is one of three presenting Rust’s ownership system. This is one of
-Rust’s most unique and compelling features, with which Rust developers should
-become quite acquainted. Ownership is how Rust achieves its largest goal,
-memory safety. There are a few distinct concepts, each with its own
-chapter:
+このガイドはRustの所有権システムに含まれる3要素の内の1つについて示したものです。これはRustの開発者が熟達すべきであり、かつRustの最もユニークで魅力的な機能の1つです。所有権はRustがその最大の目的であるメモリ安全性を実現する方法です。以下の章でそれぞれ別個の概念について説明しています。
 
-* ownership, which you’re reading now
-* [borrowing][borrowing], and their associated feature ‘references’
-* [lifetimes][lifetimes], an advanced concept of borrowing
+* 今あなたが読んでいるのが所有権です
+* '参照'の機能に関係するのが[借用][borrowing]です
+* 借用の高度な概念が[生存期][lifetimes]です
 
-These three chapters are related, and in order. You’ll need all three to fully
-understand the ownership system.
+これら3つの章はその順序にも関係があります。所有権システムの完全な理解のためには3つ全ての読解が必要となるでしょう。
 
-[borrowing]: references-and-borrowing.html
-[lifetimes]: lifetimes.html
+[borrowing]: https://doc.rust-lang.org/book/references-and-borrowing.html
+[lifetimes]: https://doc.rust-lang.org/book/lifetimes.html
 
-# Meta
+# メタ
 
-Before we get to the details, two important notes about the ownership system.
+詳細について見て行く前に、所有権システムについて2つ重要な注意事項があります。
 
-Rust has a focus on safety and speed. It accomplishes these goals through many
-‘zero-cost abstractions’, which means that in Rust, abstractions cost as little
-as possible in order to make them work. The ownership system is a prime example
-of a zero-cost abstraction. All of the analysis we’ll talk about in this guide
-is _done at compile time_. You do not pay any run-time cost for any of these
-features.
+Rustは安全性と速度に焦点を当てています。それら目的はRustにおいて動作のための抽象化コストを可能な限り抑える'ゼロコストの抽象化'を多く行うことで達成しています。所有権システムはゼロコストの抽象化の典型的な例です。私たちがこのガイドで話す詳細の全ては_コンパイル時に行われます_。あなたはこれらの機能のために実行時コストを払うことはありません。
 
-However, this system does have a certain cost: learning curve. Many new users
-to Rust experience something we like to call ‘fighting with the borrow
-checker’, where the Rust compiler refuses to compile a program that the author
-thinks is valid. This often happens because the programmer’s mental model of
-how ownership should work doesn’t match the actual rules that Rust implements.
-You probably will experience similar things at first. There is good news,
-however: more experienced Rust developers report that once they work with the
-rules of the ownership system for a period of time, they fight the borrow
-checker less and less.
+しかしながら、このシステムは確実にコストを要しその影響は学習曲線に現れます。多くのRustの新規ユーザは自身が有効だと考えているプログラムのコンパイルをコンパイラに拒否されるという、所謂'ボローチェッカーとの戦い'を経験しています。これがしばしば起きるのは所有権がこのように動作すべきだというプログラマのメンタルモデルとRustに実装された実際のルールが一致しないためです。あなたも恐らく初めは同じようなことを経験するでしょう。しかしながら良い知らせもあります。経験豊富なRustの開発者曰く、一度でもある程度の期間所有権システムのルールの下で働けば、借用チェッカーとの戦いは次第に減っていくとのことです。
 
-With that in mind, let’s learn about ownership.
+このことを念頭において、所有権について学んでいきましょう。
 
-# Ownership
+# 所有権
 
-[Variable bindings][bindings] have a property in Rust: they ‘have ownership’
-of what they’re bound to. This means that when a binding goes out of scope, the
-resource that they’re bound to are freed. For example:
+[変数束縛][bindings]はRustにおいて所有権を持つ方法です。束縛している対象の'所有権を持っている'のです。これは束縛している変数がスコープ外に出ると、束縛されていたリソースが開放されることを意味しています。例えば、
 
 ```rust
 fn foo() {
@@ -51,21 +31,15 @@ fn foo() {
 }
 ```
 
-When `v` comes into scope, a new [`Vec<T>`][vect] is created. In this case, the
-vector also allocates space on [the heap][heap], for the three elements. When
-`v` goes out of scope at the end of `foo()`, Rust will clean up everything
-related to the vector, even the heap-allocated memory. This happens
-deterministically, at the end of the scope.
+`v`がスコープに入ってくると、新たな[`Vec<T>`][vect]が作成されます。このケースでは、vectorは3つの要素のために[ヒープ領域][heap]の空間を割り当てます。`foo()`が終了し`v`がスコープの外へ出ると、Rustはヒープ領域に割り当てられたメモリも含めvectorに関連する全てを片付けます。これはスコープの終端に達したとき、確定的に行われます。
 
-[vect]: ../std/vec/struct.Vec.html
-[heap]: the-stack-and-the-heap.html
-[bindings]: variable-bindings.html
+[vect]: https://doc.rust-lang.org/std/vec/struct.Vec.html
+[heap]: https://doc.rust-lang.org/book/the-stack-and-the-heap.html
+[bindings]: https://doc.rust-lang.org/book/variable-bindings.html
 
-# Move semantics
+# ムーブセマンティクス
 
-There’s some more subtlety here, though: Rust ensures that there is _exactly
-one_ binding to any given resource. For example, if we have a vector, we can
-assign it to another binding:
+少し細かい話になりますが、Rustはあらゆるリソースについて束縛が_厳密に1つ_だけあることを保証します。例えばvectorを作成したとして、もう1つ束縛を割り当てることができます。
 
 ```rust
 let v = vec![1, 2, 3];
@@ -73,7 +47,7 @@ let v = vec![1, 2, 3];
 let v2 = v;
 ```
 
-But, if we try to use `v` afterwards, we get an error:
+しかし、その後`v`を使おうとすると、エラーが発生します。
 
 ```rust,ignore
 let v = vec![1, 2, 3];
@@ -83,7 +57,7 @@ let v2 = v;
 println!("v[0] is: {}", v[0]);
 ```
 
-It looks like this:
+エラーの内容は次のようになります。
 
 ```text
 error: use of moved value: `v`
@@ -91,12 +65,11 @@ println!("v[0] is: {}", v[0]);
                         ^
 ```
 
-A similar thing happens if we define a function which takes ownership, and
-try to use something after we’ve passed it as an argument:
+私たちが所有権を受け取る関数を定義し、引数として渡した後に変数を使おうとする場合にも同じようなことが起きます。
 
 ```rust,ignore
 fn take(v: Vec<i32>) {
-    // what happens here isn’t important.
+    // ここで起きることは重要ではありません。
 }
 
 let v = vec![1, 2, 3];
@@ -106,14 +79,11 @@ take(v);
 println!("v[0] is: {}", v[0]);
 ```
 
-Same error: ‘use of moved value’. When we transfer ownership to something else,
-we say that we’ve ‘moved’ the thing we refer to. You don’t need some sort of
-special annotation here, it’s the default thing that Rust does.
+'use of moved value'、同じエラーですね。何か他の対象へ所有権を譲渡するとき、私たちはその値を'ムーブ'したと言います。このとき特別なアノテーションの類は必要なく、Rustの動作はこれがデフォルトです。
 
-## The details
+## 詳細
 
-The reason that we cannot use a binding after we’ve moved it is subtle, but
-important. When we write code like this:
+ムーブした後の値を使うことができない理由は細かいようですが重要な話です。このようなコードを書いているとき、
 
 ```rust
 let v = vec![1, 2, 3];
@@ -121,27 +91,15 @@ let v = vec![1, 2, 3];
 let v2 = v;
 ```
 
-The first line allocates memory for the vector object, `v`, and for the data it
-contains. The vector object is stored on the [stack][sh] and contains a pointer
-to the content (`[1, 2, 3]`) stored on the [heap][sh]. When we move `v` to `v2`,
-it creates a copy of that pointer, for `v2`. Which means that there would be two
-pointers to the content of the vector on the heap. It would violate Rust’s
-safety guarantees by introducing a data race. Therefore, Rust forbids using `v`
-after we’ve done the move.
+1行目はvectorオブジェクト`v`と格納しているデータのためにメモリを割り当てています。vectorオブジェクトは[スタック][sh]に保存されており、[ヒープ領域][sh]に保存されている要素(`[1, 2, 3]`)へのポインタを格納しています。`v`を`v2`へムーブすると、`v2`のためにポインタのコピーを作成します。これはヒープ領域上のvectorの要素を指すポインタが2つになってしまうということであり、データの競合が引き起こされRustの安全性の保証に違反してしまいます。従って、Rustはムーブした後の`v`の使用を禁じているのです。
 
-[sh]: the-stack-and-the-heap.html
+[sh]: https://doc.rust-lang.org/book/the-stack-and-the-heap.html
 
-It’s also important to note that optimizations may remove the actual copy of
-the bytes on the stack, depending on circumstances. So it may not be as
-inefficient as it initially seems.
+また、状況に応じて最適化がスタック上のデータのコピーを取り除く可能性にも注目してください。ですから最初に思ったほど非効率的ではないかもしれません。
 
-## `Copy` types
+## `Copy` 型
 
-We’ve established that when ownership is transferred to another binding, you
-cannot use the original binding. However, there’s a [trait][traits] that changes this
-behavior, and it’s called `Copy`. We haven’t discussed traits yet, but for now,
-you can think of them as an annotation to a particular type that adds extra
-behavior. For example:
+所有権が他の束縛に移されると元の束縛が使用できない所までは話してきました。しかしながら、その振る舞いを変える[トレイト][traits]があり、それは`Copy`と呼ばれています。私たちはまだトレイトについて議論することができませんから、今だけ振る舞いを追加する特殊な型のためのアノテーションと考えてください。例えば、
 
 ```rust
 let v = 1;
@@ -151,36 +109,68 @@ let v2 = v;
 println!("v is: {}", v);
 ```
 
-In this case, `v` is an `i32`, which implements the `Copy` trait. This means
-that, just like a move, when we assign `v` to `v2`, a copy of the data is made.
-But, unlike a move, we can still use `v` afterward. This is because an `i32`
-has no pointers to data somewhere else, copying it is a full copy.
+このケースでは、`v`は`Copy`トレイトを実装する`i32`です。これは、`v`を`v2`へアサインするような、単純なムーブの場合に、データのコピーが生成されるという意味です。ただし、ムーブと異なり、アサインの後もまだ`v`を使うことができます。何故なら`i32`はどんなポインタも含んでおらず、「データのコピー」とは値自体を丸ごとコピーすることだからです。
 
-We will discuss how to make your own types `Copy` in the [traits][traits]
-section.
+全ての`Copy`トレイトを実装したプリミティブ型とそれの所有権は'所有権のルール'に従いムーブされないはずです。例を挙げるなら`i32`と`bool`型が`Copy`トレイトを実装していますから、以下の2つのスニペットをコンパイルしてみます。
+
+```rust
+fn main() {
+    let a = 5;
+
+    let _y = double(a);
+    println!("{}", a);
+}
+
+fn double(x: i32) -> i32 {
+    x * 2
+}
+```
+
+```rust
+fn main() {
+    let a = true;
+
+    let _y = change_truth(a);
+    println!("{}", a);
+}
+
+fn change_truth(x: bool) -> bool {
+    !x
+}
+```
+
+もしこれが`Copy`トレイトを実装していない型だったとすると、ムーブされた値を使おうとすることになりますからコンパイルエラーになるでしょう。
+
+```rust
+error: use of moved value: `a`
+println!("{}", a);
+               ^
+```
+
+あなた自身が作った型を`Copy`する方法については[トレイト][traits]の章で論じています。
 
 [traits]: traits.html
 
-# More than ownership
+# 所有権よりも
 
-Of course, if we had to hand ownership back with every function we wrote:
+勿論、元々持っていた所有権を関数に返して欲しければこう書くでしょう。
 
 ```rust
 fn foo(v: Vec<i32>) -> Vec<i32> {
-    // do stuff with v
+    // vで何かする
 
-    // hand back ownership
+    // 所有権を返す
     v
 }
 ```
 
-This would get very tedious. It gets worse the more things we want to take ownership of:
+これだと非常にうんざりすることになるはずです。返して欲しい所有権が多くなる程悪化してしまいます。
 
 ```rust
 fn foo(v1: Vec<i32>, v2: Vec<i32>) -> (Vec<i32>, Vec<i32>, i32) {
-    // do stuff with v1 and v2
+    // v1とv2で何かする
 
-    // hand back ownership, and the result of our function
+    // 返して欲しい所有権と関数の結果
     (v1, v2, 42)
 }
 
@@ -190,19 +180,6 @@ let v2 = vec![1, 2, 3];
 let (v1, v2, answer) = foo(v1, v2);
 ```
 
-Ugh! The return type, return line, and calling the function gets way more
-complicated.
+うわっ！返り値の型、返り値を書く行、関数呼び出しは更に複雑になってしまいました。
 
-Luckily, Rust offers a feature, borrowing, which helps us solve this problem.
-It’s the topic of the next section!
-
-
-
-
-
-
-
-
-
-
-
+幸いにも、Rustはこの問題を解決するのに役立つ、借用という機能を提供しています。それが次の章の話題です！
