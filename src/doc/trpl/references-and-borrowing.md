@@ -1,45 +1,28 @@
-% References and Borrowing
+# 参照と借用
 
-This guide is one of three presenting Rust’s ownership system. This is one of
-Rust’s most unique and compelling features, with which Rust developers should
-become quite acquainted. Ownership is how Rust achieves its largest goal,
-memory safety. There are a few distinct concepts, each with its own
-chapter:
+このガイドはRustの所有権システムに含まれる3要素の内の1つについて示したものです。これはRustの開発者が熟達すべきであり、かつRustの最もユニークで魅力的な機能の1つです。所有権はRustの最大の目的であるメモリ安全性を実現する方法です。以下の章でそれぞれ別個の概念について説明しています。
 
-* [ownership][ownership], the key concept
-* borrowing, which you’re reading now
-* [lifetimes][lifetimes], an advanced concept of borrowing
 
-These three chapters are related, and in order. You’ll need all three to fully
-understand the ownership system.
+* キーコンセプトとなるのが[所有権][ownership]です
+* 今あなたが読んでいるのが借用です
+* 借用を進めた概念が[lifetimes][lifetimes]です
 
-[ownership]: ownership.html
-[lifetimes]: lifetimes.html
+これら3つの章はその順序にも関係があります。所有権システムの完全な理解のためには3つ全ての読解が必要となるでしょう。
 
-# Meta
+[ownership]: https://doc.rust-lang.org/book/ownership.html
+[lifetimes]: https://doc.rust-lang.org/book/lifetimes.html
 
-Before we get to the details, two important notes about the ownership system.
+# メタ
 
-Rust has a focus on safety and speed. It accomplishes these goals through many
-‘zero-cost abstractions’, which means that in Rust, abstractions cost as little
-as possible in order to make them work. The ownership system is a prime example
-of a zero cost abstraction. All of the analysis we’ll talk about in this guide
-is _done at compile time_. You do not pay any run-time cost for any of these
-features.
+詳細について見て行く前に、所有権システムについて2つ重要な注意事項があります。
 
-However, this system does have a certain cost: learning curve. Many new users
-to Rust experience something we like to call ‘fighting with the borrow
-checker’, where the Rust compiler refuses to compile a program that the author
-thinks is valid. This often happens because the programmer’s mental model of
-how ownership should work doesn’t match the actual rules that Rust implements.
-You probably will experience similar things at first. There is good news,
-however: more experienced Rust developers report that once they work with the
-rules of the ownership system for a period of time, they fight the borrow
-checker less and less.
+Rustは安全性と速度に焦点を当てています。それら目的は、Rustにおいて動作のための抽象化コストを可能な限り抑えることを意味する'ゼロコストの抽象化'を多く行うことで達成しています。所有権システムはゼロコストの抽象化の典型的な例です。私たちがこのガイドで話す詳細の全ては_コンパイル時に行われます_。あなたはこれらの機能のために実行時コストを払うことはありません。
 
-With that in mind, let’s learn about borrowing.
+しかしながら、このシステムは確実にコストを要し、その影響は学習曲線に現れます。多くのRustの新規ユーザは自身が有効だと考えているプログラムのコンパイルをコンパイラに拒否されるという、所謂'ボローチェッカーとの戦い'を経験しています。これがしばしば起きるのはプログラマが頭の中で考える所有権がこのように動作するはずだというモデルとRustに実装された実際のルールが一致しないためです。あなたも恐らく初めは同じようなことを経験するでしょう。しかしながら良い知らせもあります。経験豊富なRustの開発者曰く、一度でもある程度の期間所有権システムのルールの下で作業すれば、借用チェッカーとの戦いは次第に減っていくとのことです。
 
-# Borrowing
+このことを念頭において、所有権について学んでいきましょう。
+
+# 借用
 
 At the end of the [ownership][ownership] section, we had a nasty function that looked
 like this:
@@ -229,7 +212,7 @@ So when we add the curly braces:
 ```rust
 let mut x = 5;
 
-{                   
+{
     let y = &mut x; // -+ &mut borrow starts here
     *y += 1;        //  |
 }                   // -+ ... and ends here
@@ -302,7 +285,7 @@ which was invalid. For example:
 
 ```rust,ignore
 let y: &i32;
-{ 
+{
     let x = 5;
     y = &x;
 }
@@ -319,7 +302,7 @@ error: `x` does not live long enough
 note: reference must be valid for the block suffix following statement 0 at
 2:16...
 let y: &i32;
-{ 
+{
     let x = 5;
     y = &x;
 }
@@ -357,7 +340,7 @@ note: reference must be valid for the block suffix following statement 0 at
     let y: &i32;
     let x = 5;
     y = &x;
-    
+
     println!("{}", y);
 }
 
@@ -365,7 +348,7 @@ note: ...but borrowed value is only valid for the block suffix following
 statement 1 at 3:14
     let x = 5;
     y = &x;
-    
+
     println!("{}", y);
 }
 ```
